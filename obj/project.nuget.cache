@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "+SZS+ATt6EFTXHdwC6Y6oJQVTRL6GwLCh5JACFho437rezETCqvmSnrgwLeCh0AaXb/x2eZKa9UHGbHxjBUPRw==",
+  "dgSpecHash": "RY7YOtPO1y6WzDjm9dNmsNs8VA2iq+rCzX9lYDqL5nFBmMFDACzHAodZpQEnN05rUMVjG/PozWTxsns8kVA3Og==",
   "success": true,
   "projectFilePath": "C:\\Users\\Patryk\\Desktop\\c#\\APO_Projekt\\APO_Projekt.csproj",
   "expectedPackageFiles": [
@@ -35,7 +35,6 @@
     "C:\\Users\\Patryk\\.nuget\\packages\\system.reflection.primitives\\4.3.0\\system.reflection.primitives.4.3.0.nupkg.sha512",
     "C:\\Users\\Patryk\\.nuget\\packages\\system.resources.resourcemanager\\4.3.0\\system.resources.resourcemanager.4.3.0.nupkg.sha512",
     "C:\\Users\\Patryk\\.nuget\\packages\\system.runtime\\4.3.1\\system.runtime.4.3.1.nupkg.sha512",
-    "C:\\Users\\Patryk\\.nuget\\packages\\system.runtime.compilerservices.unsafe\\6.0.0\\system.runtime.compilerservices.unsafe.6.0.0.nupkg.sha512",
     "C:\\Users\\Patryk\\.nuget\\packages\\system.runtime.extensions\\4.3.0\\system.runtime.extensions.4.3.0.nupkg.sha512",
     "C:\\Users\\Patryk\\.nuget\\packages\\system.runtime.handles\\4.3.0\\system.runtime.handles.4.3.0.nupkg.sha512",
     "C:\\Users\\Patryk\\.nuget\\packages\\system.runtime.interopservices\\4.3.0\\system.runtime.interopservices.4.3.0.nupkg.sha512",

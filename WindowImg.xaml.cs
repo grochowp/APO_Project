@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -27,16 +26,11 @@ namespace APO_Projekt
     /// </summary>
     public partial class WindowImg : Window
     {
-        public Mat? mat { get; set; }
+        public Mat? mat;
+        public Histogram? hist;
 
         public static event Action<Mat, WindowImg>? WindowImgFocused;
         public static event Action? WindowImgClosed;
-
-        public void ImgClosed(object? sender, System.ComponentModel.CancelEventArgs e) {
-            WindowImgClosed?.Invoke();
-            this.mat = null;
-        }
-
         public WindowImg(Mat mat, BitmapSource image)
         {
             InitializeComponent();
@@ -48,6 +42,47 @@ namespace APO_Projekt
 
         }
 
+        public void ImgClosed(object? sender, System.ComponentModel.CancelEventArgs e) {
+            WindowImgClosed?.Invoke();
+            this.mat = null;
+            this.hist?.Close();
+        }
 
+        public void HistogramUpdate()
+        {
+            if(this.mat!= null)
+            {
+                this.hist?.HistogramShow(this.mat);
+            }
+        }
+
+        public void HistogramShow()
+        {
+            if (this.mat == null || this.mat.NumberOfChannels != 1)
+            {
+                MessageBox.Show("Image is not grayscale");
+                return;
+            }
+            if (this.hist == null)
+            {
+                this.hist = new Histogram();
+                this.hist.HistogramShow(this.mat);
+                this.hist.Closed += (_, _) => this.hist = null;
+            }
+            else
+            {
+                this.hist.Focus();
+            }
+        }
     }
 }
+
+
+
+
+
+
+
+
+
+

@@ -3,10 +3,17 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:APO_Projekt"
+        xmlns:local="clr-namespace:APO_Projekt" xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
         mc:Ignorable="d"
         Title="Histogram" Height="450" Width="800">
     <Grid>
-        
+        <TabControl>
+            <TabItem Header="Grafico">
+                <lvc:CartesianChart x:Name="HistogramName"/>
+            </TabItem>
+            <TabItem Header="Tabular">
+                <DataGrid x:Name="DataName"/>
+            </TabItem>
+        </TabControl>
     </Grid>
 </Window>

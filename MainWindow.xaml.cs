@@ -17,6 +17,8 @@ using Emgu.CV;
 using Emgu.CV.CvEnum;
 using Emgu.CV.Reg;
 using Emgu.CV.Structure;
+using LiveChartsCore;
+using LiveChartsCore.SkiaSharpView;
 using Microsoft.Win32;
 
 namespace APO_Projekt
@@ -29,18 +31,6 @@ namespace APO_Projekt
     {
         public Mat? imageMat;
         public WindowImg? windowImg;
-        private void UpdateFocus(Mat mat, WindowImg windowImg)
-        {
-            this.imageMat = mat;
-            this.windowImg = windowImg;
-        }
-
-        private void ClearFocus()
-        {
-            this.imageMat = null;
-            this.windowImg = null;
-        }
-
         public MainWindow()
         {
             InitializeComponent();
@@ -48,6 +38,17 @@ namespace APO_Projekt
             WindowImg.WindowImgClosed += ClearFocus;
         }
 
+
+        private void UpdateFocus(Mat mat, WindowImg windowImg)
+        {
+            this.imageMat = mat;
+            this.windowImg = windowImg;
+        }
+        private void ClearFocus()
+        {
+            this.imageMat = null;
+            this.windowImg = null;
+        }
         private void ImportMono_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog Image = new OpenFileDialog();
@@ -80,7 +81,6 @@ namespace APO_Projekt
                 image.Show();
             }
         }
-
         private void ColorToGray_Click(object sender, RoutedEventArgs e)
         {
             if(this.imageMat == null || this.windowImg == null) MessageBox.Show("no obrazek?");
@@ -95,7 +95,6 @@ namespace APO_Projekt
             }
             
         }
-
         private void Negation_Click(object obj, RoutedEventArgs e)
         {
             //if (this.imageMat.NumberOfChannels != 1) this.ColorToGray_Click(obj, e);
@@ -117,13 +116,12 @@ namespace APO_Projekt
                 this.imageMat = grayImg.Mat;
                 this.windowImg.mat = grayImg.Mat;
                 this.windowImg.img.Source = Imaging.CreateBitmapSourceFromHBitmap(grayImg.Mat.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
-
+                this.windowImg.HistogramUpdate();
             }
         }
-
         private void Histogram_Click(object sender, RoutedEventArgs e)
         {
-            
+            this.windowImg?.HistogramShow();
         }
     }
 }
