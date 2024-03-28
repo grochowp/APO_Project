@@ -1,25 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Interop;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using Emgu.CV;
 using Emgu.CV.CvEnum;
-using Emgu.CV.Reg;
 using Emgu.CV.Structure;
-using LiveChartsCore;
-using LiveChartsCore.SkiaSharpView;
 using Microsoft.Win32;
+using Emgu.CV.Util;
 
 namespace APO_Projekt
 {
@@ -29,25 +16,25 @@ namespace APO_Projekt
     
     public partial class MainWindow : Window
     {
-        public Mat? imageMat;
-        public WindowImg? windowImg;
+        public Mat? displayedImage;
+        public WindowImgFocused? windowImgFocused;
         public MainWindow()
         {
             InitializeComponent();
-            WindowImg.WindowImgFocused += UpdateFocus;
-            WindowImg.WindowImgClosed += ClearFocus;
+            WindowImgFocused.windowImgFocused += UpdateFocus;
+            WindowImgFocused.windowImgClosed += ClearFocus;
         }
 
 
-        private void UpdateFocus(Mat mat, WindowImg windowImg)
+        private void UpdateFocus(Mat mat, WindowImgFocused windowImg)
         {
-            this.imageMat = mat;
-            this.windowImg = windowImg;
+            this.displayedImage = mat;
+            this.windowImgFocused = windowImg;
         }
         private void ClearFocus()
         {
-            this.imageMat = null;
-            this.windowImg = null;
+            this.displayedImage = null;
+            this.windowImgFocused = null;
         }
         private void ImportMono_Click(object sender, RoutedEventArgs e)
         {
@@ -61,7 +48,7 @@ namespace APO_Projekt
                 string fileName = Image.FileName;    
                 Mat ImageOpened = CvInvoke.Imread(fileName, ImreadModes.Grayscale);
                 BitmapSource bitmapSource = Imaging.CreateBitmapSourceFromHBitmap(ImageOpened.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
-                WindowImg imgWindow = new WindowImg(ImageOpened, bitmapSource);
+                WindowImgFocused imgWindow = new WindowImgFocused(ImageOpened, bitmapSource);
                 imgWindow.Show();             
             }
         }
@@ -77,32 +64,32 @@ namespace APO_Projekt
                 string fileName = Image.FileName;
                 Mat ImageOpened = CvInvoke.Imread(fileName, ImreadModes.Color);
                 BitmapSource bitmapSource = Imaging.CreateBitmapSourceFromHBitmap(ImageOpened.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
-                WindowImg image = new WindowImg(ImageOpened, bitmapSource);
+                WindowImgFocused image = new WindowImgFocused(ImageOpened, bitmapSource);
                 image.Show();
             }
         }
         private void ColorToGray_Click(object sender, RoutedEventArgs e)
         {
-            if(this.imageMat == null || this.windowImg == null) MessageBox.Show("no obrazek?");
-            else if (this.imageMat.NumberOfChannels == 1) MessageBox.Show("?"); 
+            if(this.displayedImage == null || this.windowImgFocused == null) MessageBox.Show("no obrazek?");
+            else if (this.displayedImage.NumberOfChannels == 1) MessageBox.Show("?"); 
             else
             {
             Mat mat = new Mat();
-            CvInvoke.CvtColor(this.imageMat, mat, ColorConversion.Bgr2Gray);
-            this.imageMat = mat;
-            this.windowImg.mat = mat;
-            this.windowImg.img.Source = Imaging.CreateBitmapSourceFromHBitmap(mat.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+            CvInvoke.CvtColor(this.displayedImage, mat, ColorConversion.Bgr2Gray);
+            this.displayedImage = mat;
+            this.windowImgFocused.mat = mat;
+            this.windowImgFocused.img.Source = Imaging.CreateBitmapSourceFromHBitmap(mat.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
             }
             
         }
         private void Negation_Click(object obj, RoutedEventArgs e)
         {
             //if (this.imageMat.NumberOfChannels != 1) this.ColorToGray_Click(obj, e);
-            if (this.imageMat == null || this.windowImg == null) MessageBox.Show("Can`t call negation sry");
-            else if (this.imageMat.NumberOfChannels != 1) MessageBox.Show("Convert to gray");
+            if (this.displayedImage == null || this.windowImgFocused == null) MessageBox.Show("Can`t call negation sry");
+            else if (this.displayedImage.NumberOfChannels != 1) MessageBox.Show("Convert to gray");
             else
             {
-                Mat negatedImg = this.imageMat.Clone();
+                Mat negatedImg = this.displayedImage.Clone();
                 Image<Gray, byte> grayImg = negatedImg.ToImage<Gray, byte>();
                 for (int i = 0; i < grayImg.Rows; i++)
                 {
@@ -113,15 +100,123 @@ namespace APO_Projekt
                     }
 
                 }
-                this.imageMat = grayImg.Mat;
-                this.windowImg.mat = grayImg.Mat;
-                this.windowImg.img.Source = Imaging.CreateBitmapSourceFromHBitmap(grayImg.Mat.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
-                this.windowImg.HistogramUpdate();
+                this.displayedImage = grayImg.Mat;
+                this.windowImgFocused.mat = grayImg.Mat;
+                this.windowImgFocused.img.Source = Imaging.CreateBitmapSourceFromHBitmap(grayImg.Mat.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+                this.windowImgFocused.HistogramUpdate();
             }
         }
         private void Histogram_Click(object sender, RoutedEventArgs e)
         {
-            this.windowImg?.HistogramShow();
+            this.windowImgFocused?.HistogramShow();
+        }
+        private void ImageSplitChannels_Click(object sender, RoutedEventArgs e)
+        {
+            if (this.displayedImage == null || this.displayedImage.NumberOfChannels == 1)
+            {
+                MessageBox.Show("Image is grayscale");
+                return;
+            }
+            VectorOfMat vector = new VectorOfMat();
+            CvInvoke.Split(this.windowImgFocused?.mat, vector);
+            for(int i = 0; i<vector.Size; ++i)
+            {
+                Mat vect = vector[i];
+                Mat vectClone = vect.Clone();
+                BitmapSource bitmapSource = Imaging.CreateBitmapSourceFromHBitmap(vectClone.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+                WindowImgFocused imgWindow = new WindowImgFocused(vectClone, bitmapSource);
+                imgWindow.Show();
+            }
+            
+        }
+        private void HSV_Click(object sender, RoutedEventArgs e)
+        {
+            if (this.displayedImage == null || this.displayedImage.NumberOfChannels == 1)
+            {
+                MessageBox.Show("Image is grayscale");
+                return;
+            }
+            if (this.windowImgFocused?.mat == null) return;
+            Mat initial = this.windowImgFocused.mat;
+            Mat result = new Mat();
+            CvInvoke.CvtColor(initial, result, ColorConversion.Bgr2Hsv);
+            VectorOfMat vector = new VectorOfMat();
+            CvInvoke.Split(result, vector);
+            for (int i = 0; i < vector.Size; ++i)
+            {
+                Mat vect = vector[i];
+                Mat vectClone = vect.Clone();
+                BitmapSource bitmapSource = Imaging.CreateBitmapSourceFromHBitmap(vectClone.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+                WindowImgFocused imgWindow = new WindowImgFocused(vectClone, bitmapSource);
+                imgWindow.Show();
+            }
+
+        }
+        private void Lab_Click(object sender, RoutedEventArgs e)
+        {
+            if (this.displayedImage == null || this.displayedImage.NumberOfChannels == 1)
+            {
+                MessageBox.Show("Image is grayscale");
+                return;
+            }
+            if (this.windowImgFocused?.mat == null) return;
+            Mat initial = this.windowImgFocused.mat;
+            Mat result = new Mat();
+            CvInvoke.CvtColor(initial, result, ColorConversion.Bgr2Lab);
+            VectorOfMat vector = new VectorOfMat();
+            CvInvoke.Split(result, vector);
+            for (int i = 0; i < vector.Size; ++i)
+            {
+                Mat vect = vector[i];
+                Mat vectClone = vect.Clone();
+                BitmapSource bitmapSource = Imaging.CreateBitmapSourceFromHBitmap(vectClone.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+                WindowImgFocused imgWindow = new WindowImgFocused(vectClone, bitmapSource);
+                imgWindow.Show();
+            }
+
+        }
+
+        private void StretchHistogram_Click(object sender, RoutedEventArgs e)
+        {
+            if (this.displayedImage == null || this.displayedImage.NumberOfChannels != 1)
+            {
+                MessageBox.Show("Cannot Stretch Histogram.");
+                return;
+            }
+
+            this.windowImgFocused?.StretchHistogram(this.displayedImage);
+            this.windowImgFocused?.HistogramUpdate();
+        }
+
+        private void StretchContrast_Click(object sender, RoutedEventArgs e)
+        {
+
+            StretchData stretchData = new StretchData();
+            if(stretchData.ShowDialog() == true)
+            {
+                int p1 = stretchData.P1;
+                int p2 = stretchData.P2;
+                int q3 = stretchData.Q3;
+                int q4 = stretchData.Q4;
+            
+
+            if (this.displayedImage == null || this.displayedImage.NumberOfChannels != 1)
+            {
+                MessageBox.Show("Cannot Stretch Contrast.");
+                return;
+            }
+            this.windowImgFocused?.StretchContrast(p1, p2, q3, q4);
+            this.windowImgFocused?.HistogramUpdate();
+
+           }
+        }
+
+        public void Equalize_Click(object sender, RoutedEventArgs e)
+        {
+            {
+                windowImgFocused?.EqualizeHistogram();
+                windowImgFocused?.HistogramUpdate();
+            }
         }
     }
 }

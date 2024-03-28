@@ -74,3 +74,5 @@ C:\Users\Patryk\Desktop\c#\APO_Projekt\obj\Debug\net7.0-windows7.0\refint\APO_Pr
 C:\Users\Patryk\Desktop\c#\APO_Projekt\obj\Debug\net7.0-windows7.0\APO_Projekt.pdb
 C:\Users\Patryk\Desktop\c#\APO_Projekt\obj\Debug\net7.0-windows7.0\APO_Projekt.genruntimeconfig.cache
 C:\Users\Patryk\Desktop\c#\APO_Projekt\obj\Debug\net7.0-windows7.0\ref\APO_Projekt.dll
+C:\Users\Patryk\Desktop\c#\APO_Projekt\obj\Debug\net7.0-windows7.0\StretchData.g.cs
+C:\Users\Patryk\Desktop\c#\APO_Projekt\obj\Debug\net7.0-windows7.0\StretchData.baml

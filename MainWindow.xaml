@@ -14,6 +14,12 @@
                 <MenuItem Header="Color to gray" Click="ColorToGray_Click"/>
                 <MenuItem Header="Negation" Click="Negation_Click"/>
                 <MenuItem Header="Histogram" Click="Histogram_Click"/>
+                <MenuItem Header="Split channels" Click="ImageSplitChannels_Click"/>
+                <MenuItem Header="Convert to HSV" Click="HSV_Click"/>
+                <MenuItem Header="Convert to Lab" Click="Lab_Click"/>
+                <MenuItem Header="Stretch histogram" Click="StretchHistogram_Click"/>
+                <MenuItem Header="Stretch contrast" Click="StretchContrast_Click"/>
+                <MenuItem Header="Equalize" Click="Equalize_Click"/>
             </MenuItem> 
         </Menu>
     </Grid>

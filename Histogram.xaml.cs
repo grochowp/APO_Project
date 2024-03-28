@@ -54,9 +54,6 @@ namespace APO_Projekt
 
             HistogramName.Series = new ISeries[] { histSeries };
             DataName.ItemsSource = tableData;
-           // DataGridTextColumn column = new DataGridTextColumn();
-           // column.Header = "intensidad";
-           // column.Binding
 
             this.Show();
         }

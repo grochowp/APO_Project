@@ -70,7 +70,7 @@ namespace APO_Projekt {
                 return;
             }
             _contentLoaded = true;
-            System.Uri resourceLocater = new System.Uri("/APO_Projekt;V1.0.0.0;component/histogram.xaml", System.UriKind.Relative);
+            System.Uri resourceLocater = new System.Uri("/APO_Projekt;component/histogram.xaml", System.UriKind.Relative);
             
             #line 1 "..\..\..\Histogram.xaml"
             System.Windows.Application.LoadComponent(this, resourceLocater);
