@@ -229,8 +229,6 @@ namespace APO_Projekt
             {
                 int level = canals.level;
 
-
-
                 if (this.displayedImage == null || this.displayedImage.NumberOfChannels != 1)
                 {
                     MessageBox.Show("Cannot perform posterization on a non-grayscale image.");

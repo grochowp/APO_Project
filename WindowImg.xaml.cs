@@ -155,26 +155,34 @@ namespace APO_Projekt
         {
             Mat result = new Mat(mat.Size, DepthType.Cv8U, 1);
 
-            int step = 256 / levels;
+            int step = (int)Math.Ceiling(256.0 / levels);
+
+            byte[] matData = new byte[mat.Rows * mat.Cols * mat.ElementSize];
+            mat.CopyTo(matData);
+
+            byte[] resultData = new byte[result.Rows * result.Cols * result.ElementSize];
 
             for (int y = 0; y < mat.Rows; y++)
             {
                 for (int x = 0; x < mat.Cols; x++)
                 {
-                    IntPtr pixelPtr = mat.DataPointer + (y * mat.Step) + (x * mat.ElementSize);
-                    byte pixelValue = Marshal.ReadByte(pixelPtr);
+                    int index = y * mat.Cols + x;
+                    byte pixelValue = matData[index];
 
                     byte newValue = (byte)(pixelValue / step * step);
 
-                    IntPtr resultPtr = result.DataPointer + (y * result.Step) + (x * result.ElementSize);
-                    Marshal.WriteByte(resultPtr, newValue);
+                    resultData[index] = newValue;
                 }
             }
+
+            result.SetTo(resultData);
 
             BitmapSource bitmapSource = Imaging.CreateBitmapSourceFromHBitmap(result.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
             WindowImgFocused imgWindow = new WindowImgFocused(result, bitmapSource);
             imgWindow.Show();
         }
+
+
 
     }
 }
