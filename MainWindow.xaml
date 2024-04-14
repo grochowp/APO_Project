@@ -20,7 +20,19 @@
                 <MenuItem Header="Stretch histogram" Click="StretchHistogram_Click"/>
                 <MenuItem Header="Stretch contrast" Click="StretchContrast_Click"/>
                 <MenuItem Header="Equalize" Click="Equalize_Click"/>
-            </MenuItem> 
+            </MenuItem>
+            <MenuItem Header="Lab2">
+                <MenuItem Header="Posterize" Click="Posterize_Click"/>
+            </MenuItem>
+            <MenuItem Header="Lab3">
+
+            </MenuItem>
+            <MenuItem Header="Lab4">
+
+            </MenuItem>
+            <MenuItem Header="Lab5">
+
+            </MenuItem>
         </Menu>
     </Grid>
 </Window>

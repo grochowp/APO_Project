@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media.Imaging;
 using Emgu.CV;
+using Emgu.CV.CvEnum;
 using Emgu.CV.Structure;
 
 namespace APO_Projekt
@@ -150,7 +151,30 @@ namespace APO_Projekt
             this.img.Source = Imaging.CreateBitmapSourceFromHBitmap(mat.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
         }
 
+        public void Posterize(Mat mat, int levels)
+        {
+            Mat result = new Mat(mat.Size, DepthType.Cv8U, 1);
 
+            int step = 256 / levels;
+
+            for (int y = 0; y < mat.Rows; y++)
+            {
+                for (int x = 0; x < mat.Cols; x++)
+                {
+                    IntPtr pixelPtr = mat.DataPointer + (y * mat.Step) + (x * mat.ElementSize);
+                    byte pixelValue = Marshal.ReadByte(pixelPtr);
+
+                    byte newValue = (byte)(pixelValue / step * step);
+
+                    IntPtr resultPtr = result.DataPointer + (y * result.Step) + (x * result.ElementSize);
+                    Marshal.WriteByte(resultPtr, newValue);
+                }
+            }
+
+            BitmapSource bitmapSource = Imaging.CreateBitmapSourceFromHBitmap(result.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+            WindowImgFocused imgWindow = new WindowImgFocused(result, bitmapSource);
+            imgWindow.Show();
+        }
 
     }
 }

@@ -7,13 +7,14 @@ using Emgu.CV.CvEnum;
 using Emgu.CV.Structure;
 using Microsoft.Win32;
 using Emgu.CV.Util;
+using System.Runtime.InteropServices;
 
 namespace APO_Projekt
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    
+
     public partial class MainWindow : Window
     {
         public Mat? displayedImage;
@@ -40,16 +41,16 @@ namespace APO_Projekt
         {
             OpenFileDialog Image = new OpenFileDialog();
 
-           // Image.DefaultExt = ".bmp";
-           // Image.Filter = "PNG Files (*.png)|*.png|JPG Files (*.jpg)|*.jpg";    
-            if (Image.ShowDialog() == true)    
-                
-            {              
-                string fileName = Image.FileName;    
+            // Image.DefaultExt = ".bmp";
+            // Image.Filter = "PNG Files (*.png)|*.png|JPG Files (*.jpg)|*.jpg";    
+            if (Image.ShowDialog() == true)
+
+            {
+                string fileName = Image.FileName;
                 Mat ImageOpened = CvInvoke.Imread(fileName, ImreadModes.Grayscale);
                 BitmapSource bitmapSource = Imaging.CreateBitmapSourceFromHBitmap(ImageOpened.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
                 WindowImgFocused imgWindow = new WindowImgFocused(ImageOpened, bitmapSource);
-                imgWindow.Show();             
+                imgWindow.Show();
             }
         }
         private void ImportColor_Click(object sender, RoutedEventArgs e)
@@ -70,17 +71,17 @@ namespace APO_Projekt
         }
         private void ColorToGray_Click(object sender, RoutedEventArgs e)
         {
-            if(this.displayedImage == null || this.windowImgFocused == null) MessageBox.Show("no obrazek?");
-            else if (this.displayedImage.NumberOfChannels == 1) MessageBox.Show("?"); 
+            if (this.displayedImage == null || this.windowImgFocused == null) MessageBox.Show("no obrazek?");
+            else if (this.displayedImage.NumberOfChannels == 1) MessageBox.Show("?");
             else
             {
-            Mat mat = new Mat();
-            CvInvoke.CvtColor(this.displayedImage, mat, ColorConversion.Bgr2Gray);
-            this.displayedImage = mat;
-            this.windowImgFocused.mat = mat;
-            this.windowImgFocused.img.Source = Imaging.CreateBitmapSourceFromHBitmap(mat.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+                Mat mat = new Mat();
+                CvInvoke.CvtColor(this.displayedImage, mat, ColorConversion.Bgr2Gray);
+                this.displayedImage = mat;
+                this.windowImgFocused.mat = mat;
+                this.windowImgFocused.img.Source = Imaging.CreateBitmapSourceFromHBitmap(mat.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
             }
-            
+
         }
         private void Negation_Click(object obj, RoutedEventArgs e)
         {
@@ -119,7 +120,7 @@ namespace APO_Projekt
             }
             VectorOfMat vector = new VectorOfMat();
             CvInvoke.Split(this.windowImgFocused?.mat, vector);
-            for(int i = 0; i<vector.Size; ++i)
+            for (int i = 0; i < vector.Size; ++i)
             {
                 Mat vect = vector[i];
                 Mat vectClone = vect.Clone();
@@ -127,7 +128,7 @@ namespace APO_Projekt
                 WindowImgFocused imgWindow = new WindowImgFocused(vectClone, bitmapSource);
                 imgWindow.Show();
             }
-            
+
         }
         private void HSV_Click(object sender, RoutedEventArgs e)
         {
@@ -192,30 +193,51 @@ namespace APO_Projekt
         {
 
             StretchData stretchData = new StretchData();
-            if(stretchData.ShowDialog() == true)
+            if (stretchData.ShowDialog() == true)
             {
                 int p1 = stretchData.P1;
                 int p2 = stretchData.P2;
                 int q3 = stretchData.Q3;
                 int q4 = stretchData.Q4;
-            
 
-            if (this.displayedImage == null || this.displayedImage.NumberOfChannels != 1)
-            {
-                MessageBox.Show("Cannot Stretch Contrast.");
-                return;
+
+                if (this.displayedImage == null || this.displayedImage.NumberOfChannels != 1)
+                {
+                    MessageBox.Show("Cannot Stretch Contrast.");
+                    return;
+                }
+                this.windowImgFocused?.StretchContrast(p1, p2, q3, q4);
+                this.windowImgFocused?.HistogramUpdate();
+
             }
-            this.windowImgFocused?.StretchContrast(p1, p2, q3, q4);
-            this.windowImgFocused?.HistogramUpdate();
-
-           }
         }
 
-        public void Equalize_Click(object sender, RoutedEventArgs e)
+        private void Equalize_Click(object sender, RoutedEventArgs e)
         {
             {
                 windowImgFocused?.EqualizeHistogram();
                 windowImgFocused?.HistogramUpdate();
+            }
+        }
+
+
+        private void Posterize_Click(object sender, RoutedEventArgs e)
+        {
+
+            Canals canals = new Canals();
+            if (canals.ShowDialog() == true)
+            {
+                int level = canals.level;
+
+
+
+                if (this.displayedImage == null || this.displayedImage.NumberOfChannels != 1)
+                {
+                    MessageBox.Show("Cannot perform posterization on a non-grayscale image.");
+                    return;
+                }
+                this.windowImgFocused?.Posterize(this.displayedImage, level);
+                this.windowImgFocused?.HistogramUpdate();
             }
         }
     }
