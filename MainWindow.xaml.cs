@@ -49,7 +49,7 @@ namespace APO_Projekt
                 string fileName = Image.FileName;
                 Mat ImageOpened = CvInvoke.Imread(fileName, ImreadModes.Grayscale);
                 BitmapSource bitmapSource = Imaging.CreateBitmapSourceFromHBitmap(ImageOpened.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
-                WindowImgFocused imgWindow = new WindowImgFocused(ImageOpened, bitmapSource);
+                WindowImgFocused imgWindow = new WindowImgFocused(ImageOpened, bitmapSource, "Mono");
                 imgWindow.Show();
             }
         }
@@ -65,7 +65,7 @@ namespace APO_Projekt
                 string fileName = Image.FileName;
                 Mat ImageOpened = CvInvoke.Imread(fileName, ImreadModes.Color);
                 BitmapSource bitmapSource = Imaging.CreateBitmapSourceFromHBitmap(ImageOpened.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
-                WindowImgFocused image = new WindowImgFocused(ImageOpened, bitmapSource);
+                WindowImgFocused image = new WindowImgFocused(ImageOpened, bitmapSource, "Color");
                 image.Show();
             }
         }
@@ -125,7 +125,7 @@ namespace APO_Projekt
                 Mat vect = vector[i];
                 Mat vectClone = vect.Clone();
                 BitmapSource bitmapSource = Imaging.CreateBitmapSourceFromHBitmap(vectClone.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
-                WindowImgFocused imgWindow = new WindowImgFocused(vectClone, bitmapSource);
+                WindowImgFocused imgWindow = new WindowImgFocused(vectClone, bitmapSource, "Channel " + (i+1));
                 imgWindow.Show();
             }
 
@@ -143,12 +143,15 @@ namespace APO_Projekt
             CvInvoke.CvtColor(initial, result, ColorConversion.Bgr2Hsv);
             VectorOfMat vector = new VectorOfMat();
             CvInvoke.Split(result, vector);
+
+            string[] channelNames = { "Hue", "Saturation", "Value" }; 
+
             for (int i = 0; i < vector.Size; ++i)
             {
                 Mat vect = vector[i];
                 Mat vectClone = vect.Clone();
                 BitmapSource bitmapSource = Imaging.CreateBitmapSourceFromHBitmap(vectClone.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
-                WindowImgFocused imgWindow = new WindowImgFocused(vectClone, bitmapSource);
+                WindowImgFocused imgWindow = new WindowImgFocused(vectClone, bitmapSource, "(HSV) " + channelNames[i]);
                 imgWindow.Show();
             }
 
@@ -166,12 +169,15 @@ namespace APO_Projekt
             CvInvoke.CvtColor(initial, result, ColorConversion.Bgr2Lab);
             VectorOfMat vector = new VectorOfMat();
             CvInvoke.Split(result, vector);
+
+            string[] channelNames = { "Luminance", "a", "b" }; 
+
             for (int i = 0; i < vector.Size; ++i)
             {
                 Mat vect = vector[i];
                 Mat vectClone = vect.Clone();
                 BitmapSource bitmapSource = Imaging.CreateBitmapSourceFromHBitmap(vectClone.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
-                WindowImgFocused imgWindow = new WindowImgFocused(vectClone, bitmapSource);
+                WindowImgFocused imgWindow = new WindowImgFocused(vectClone, bitmapSource, "(Lab) " + channelNames[i]);
                 imgWindow.Show();
             }
 
@@ -240,3 +246,4 @@ namespace APO_Projekt
         }
     }
 }
+

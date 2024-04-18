@@ -7,33 +7,33 @@
     </ApplicationDefinition>
   </ItemGroup>
   <ItemGroup>
-    <Compile Update="Canals.xaml.cs">
+    <Compile Update="Features\Canals.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Histogram.xaml.cs">
+    <Compile Update="Features\Histogram.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="StretchData.xaml.cs">
+    <Compile Update="Features\StretchData.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="WindowImg.xaml.cs">
+    <Compile Update="Focused window\WindowImgFocused.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Page Update="Canals.xaml">
+    <Page Update="Features\Canals.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="Histogram.xaml">
+    <Page Update="Features\Histogram.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="MainWindow.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="StretchData.xaml">
+    <Page Update="Features\StretchData.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="WindowImg.xaml">
+    <Page Update="Focused window\WindowImgFocused.xaml">
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
