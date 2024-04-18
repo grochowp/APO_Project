@@ -23,6 +23,27 @@
             </MenuItem>
             <MenuItem Header="Lab2">
                 <MenuItem Header="Posterize" Click="Posterize_Click"/>
+                <MenuItem Header="Apply Smoothing">
+                    <MenuItem Header="Blur" Click="Blur_Click"/>
+                    <MenuItem Header="Gaussian Blur" Click="GaussianBlur_Click"/>
+                </MenuItem>
+                <MenuItem Header="Edge Detection">
+                    <MenuItem Header="Sobel" Click="SobelEdgeDetection_Click"/>
+                    <MenuItem Header="Laplacian" Click="LaplacianEdgeDetection_Click"/>
+                    <MenuItem Header="Canny" Click="CannyEdgeDetection_Click"/>
+                    <MenuItem Header="Border Type">
+                        <MenuItem Header="Isolated" Click="BorderType_Isolated_Click"/>
+                        <MenuItem Header="Replicate" Click="BorderType_Replicate_Click"/>
+                        <MenuItem Header="Reflect" Click="BorderType_Reflect_Click"/>
+                    </MenuItem>
+                </MenuItem>
+                <MenuItem Header="Linear Laplacian Sharpening">
+                    <MenuItem Header="Mask 1" Click="LinearLaplacianSharpening1_Click"/>
+                    <MenuItem Header="Mask 2" Click="LinearLaplacianSharpening2_Click"/>
+                    <MenuItem Header="Mask 3" Click="LinearLaplacianSharpening3_Click"/>
+                </MenuItem>
+                <MenuItem Header="Directional Edge Detection" Click="PrewittEdgeDetection_Click"/>
+                <MenuItem Header="Custom Linear Operation" Click="CustomLinearOperation_Click"/>
             </MenuItem>
             <MenuItem Header="Lab3">
 

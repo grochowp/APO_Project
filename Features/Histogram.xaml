@@ -8,10 +8,10 @@
         Title="Histogram" Height="450" Width="800">
     <Grid>
         <TabControl>
-            <TabItem Header="Grafico">
+            <TabItem Header="Wykres">
                 <lvc:CartesianChart x:Name="HistogramName"/>
             </TabItem>
-            <TabItem Header="Tabular">
+            <TabItem Header="Tablica">
                 <DataGrid x:Name="DataName"/>
             </TabItem>
         </TabControl>
