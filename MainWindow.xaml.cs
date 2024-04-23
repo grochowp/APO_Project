@@ -8,6 +8,8 @@ using Emgu.CV.Structure;
 using Microsoft.Win32;
 using Emgu.CV.Util;
 using System.Runtime.InteropServices;
+using System.Collections.Generic;
+using APO_Projekt.Features;
 
 namespace APO_Projekt
 {
@@ -370,24 +372,120 @@ namespace APO_Projekt
 
         private void LinearLaplacianSharpening1_Click(object sender, RoutedEventArgs e)
         {
-
+            float[,] laplacianMask = {
+            { 0, -1, 0 },
+            { -1, 5, -1 },
+            { 0, -1, 0 }
+        };
+            ApplyLinearLaplacianSharpening(laplacianMask, "mask 1");
         }
+
         private void LinearLaplacianSharpening2_Click(object sender, RoutedEventArgs e)
         {
-
+            float[,] laplacianMask = {
+                { 1, 1, 1 },
+                {  1, -9, 1},
+                { 1, 1, 1 }
+            };
+            ApplyLinearLaplacianSharpening(laplacianMask, "mask 2");
         }
+
         private void LinearLaplacianSharpening3_Click(object sender, RoutedEventArgs e)
         {
-           
+            float[,] laplacianMask = {
+                { 1, -2, 1 },
+                { -2, 5, -2 },
+                { 1, -2, 1 }
+            };
+            ApplyLinearLaplacianSharpening(laplacianMask, "mask 3");
+        }
+
+        private void ApplyLinearLaplacianSharpening(float[,] laplacianMask, string title)
+        {
+
+            if (displayedImage == null || windowImgFocused == null)
+            {
+                MessageBox.Show("No image selected.");
+                return;
+            }
+
+            if (laplacianMask.GetLength(0) != 3 || laplacianMask.GetLength(1) != 3)
+            {
+                MessageBox.Show("Invalid mask size. Must be 3x3.");
+                return;
+            }
+            ConvolutionKernelF matrixKernel = new ConvolutionKernelF(laplacianMask);
+
+            try
+            {
+                Mat sharpenedMat = new Mat();
+                if (displayedImage.Size != sharpenedMat.Size)
+                {
+                    sharpenedMat = displayedImage.Clone();
+                }
+                System.Drawing.Point point = new System.Drawing.Point(-1, -1);
+
+                CvInvoke.Filter2D(displayedImage, sharpenedMat, matrixKernel, point, 0, selectedBorderType);
+
+                displayedImage = sharpenedMat;
+                windowImgFocused.mat = sharpenedMat;
+                windowImgFocused.img.Source = Imaging.CreateBitmapSourceFromHBitmap(sharpenedMat.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+                windowImgFocused.Title = "(" + title + ") Linear Laplacian Sharpening";
+                windowImgFocused?.HistogramUpdate();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error applying filter2D: " + ex.Message);
+                Console.WriteLine("Exception details: " + ex.ToString());
+            }
         }
         private void PrewittEdgeDetection_Click(object sender, RoutedEventArgs e)
         {
-
+          
         }
+
         private void CustomLinearOperation_Click(object sender, RoutedEventArgs e)
         {
+            Mask3x3 mask = new Mask3x3();
+            if (mask.ShowDialog() == true)
+            {
+                int m1 = mask.M1;
+                int m2 = mask.M2;
+                int m3 = mask.M3;
+                int m4 = mask.M4;
+                int m5 = mask.M5;
+                int m6 = mask.M6;
+                int m7 = mask.M7;
+                int m8 = mask.M8;
+                int m9 = mask.M9;
 
+                if (this.displayedImage == null || windowImgFocused == null)
+                {
+                    MessageBox.Show("No image selected.");
+                    return;
+                }
+
+                Mat kernel = new Mat(3, 3, DepthType.Cv32F, 1);
+                float[] kernelData = new float[] { m1, m2, m3, m4, m5, m6, m7, m8, m9 };
+                kernel.SetTo(kernelData);
+
+                Mat sharpenedMat = new Mat();
+                if (displayedImage.Size != sharpenedMat.Size)
+                {
+                    sharpenedMat = displayedImage.Clone();
+                }
+                CvInvoke.Filter2D(displayedImage, sharpenedMat, kernel, new System.Drawing.Point(-1, -1), 0, selectedBorderType);
+
+                displayedImage = sharpenedMat;
+                windowImgFocused.mat = sharpenedMat;
+                windowImgFocused.img.Source = Imaging.CreateBitmapSourceFromHBitmap(sharpenedMat.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+                windowImgFocused.Title = "Custom Linear Operation";
+                windowImgFocused?.HistogramUpdate();
+                
+               
+            }
         }
+
     }
 }
 
