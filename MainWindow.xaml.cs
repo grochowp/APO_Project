@@ -81,7 +81,7 @@ namespace APO_Projekt
             OpenFileDialog Image = new OpenFileDialog();
 
             Image.DefaultExt = ".bmp";
-            Image.Filter = "JPG/PNG Files (*.jpg, *.png)|*.jpg;*.png|PNG Files (*.png)|*.png|JPEG Files (*.jpg)|*.jpg";
+            Image.Filter = "JPG/PNG Files (*.jpg, *.png, *.bmp)|*.jpg;*.png;*.bmp|PNG Files (*.png)|*.png|JPEG Files (*.jpg)|*.jpg";
             if (Image.ShowDialog() == true)
 
             {
@@ -377,7 +377,7 @@ namespace APO_Projekt
             { -1, 5, -1 },
             { 0, -1, 0 }
         };
-            ApplyLinearLaplacianSharpening(laplacianMask, "mask 1");
+            ApplyLinearLaplacianSharpening(laplacianMask, "(mask 1) Linear Laplacian Sharpening");
         }
 
         private void LinearLaplacianSharpening2_Click(object sender, RoutedEventArgs e)
@@ -387,7 +387,7 @@ namespace APO_Projekt
                 {  1, -9, 1},
                 { 1, 1, 1 }
             };
-            ApplyLinearLaplacianSharpening(laplacianMask, "mask 2");
+            ApplyLinearLaplacianSharpening(laplacianMask, "(mask 2) Linear Laplacian Sharpening");
         }
 
         private void LinearLaplacianSharpening3_Click(object sender, RoutedEventArgs e)
@@ -397,10 +397,84 @@ namespace APO_Projekt
                 { -2, 5, -2 },
                 { 1, -2, 1 }
             };
-            ApplyLinearLaplacianSharpening(laplacianMask, "mask 3");
+            ApplyLinearLaplacianSharpening(laplacianMask, "(mask 3) Linear Laplacian Sharpening");
         }
 
-        private void ApplyLinearLaplacianSharpening(float[,] laplacianMask, string title)
+      
+        private void PrewittEdgeDetectionH_Click(object sender, RoutedEventArgs e)
+        {
+            float[,] prewittMask = {
+                {-1, 0, 1 }, 
+                {-1, 0, 1 },
+                {-1, 0, 1 }
+            };
+            ApplyLinearLaplacianSharpening(prewittMask, "Prewitt H");
+        }
+        private void PrewittEdgeDetectionV_Click(object sender, RoutedEventArgs e)
+        {
+            float[,] prewittMask = {
+                { -1, -1, -1},
+                {0, 0, 0 },
+                {1, 1, 1 }
+            };
+            ApplyLinearLaplacianSharpening(prewittMask, "Prewitt V");
+        }
+        private void PrewittEdgeDetectionNE_Click(object sender, RoutedEventArgs e)
+        {
+            float[,] prewittMask = {
+              { 0, 1, 1 },
+              {-1, 0, 1 },
+              {-1, -1, 0 }
+            };
+            ApplyLinearLaplacianSharpening(prewittMask, "Prewitt NE");
+        }
+        private void PrewittEdgeDetectionSE_Click(object sender, RoutedEventArgs e)
+        {
+            float[,] prewittMask = {
+               { -1, 0, 1 },
+               {-1, 0, 1 }, 
+               {0, -1, 1 }
+            };
+            ApplyLinearLaplacianSharpening(prewittMask, "Prewitt SE");
+        }
+        private void PrewittEdgeDetectionNW_Click(object sender, RoutedEventArgs e)
+        {
+            float[,] prewittMask = {
+                { 1, 1, 0 },
+                {1, 0, -1 },
+                {0, -1, -1 }
+            };
+            ApplyLinearLaplacianSharpening(prewittMask, "Prewitt NW");
+        }
+        private void PrewittEdgeDetectionSW_Click(object sender, RoutedEventArgs e)
+        {
+            float[,] prewittMask = {
+               { 0, -1, -1 },
+               {1, 0, -1 },
+               {1, 1, 0 }
+            };
+            ApplyLinearLaplacianSharpening(prewittMask, "Prewitt SW");
+        }
+        private void PrewittEdgeDetectionIH_Click(object sender, RoutedEventArgs e)
+        {
+            float[,] prewittMask = {
+              { 1, 0, -1 },
+              {1, 0, -1 },
+              {1, 0, -1 }
+            };
+            ApplyLinearLaplacianSharpening(prewittMask, "Prewitt IH");
+        }
+        private void PrewittEdgeDetectionIV_Click(object sender, RoutedEventArgs e)
+        {
+            float[,] prewittMask = {
+              { 0, -1, 0 },
+              {-1, 0, -1 },
+              {0, 1, 0 }
+            };
+            ApplyLinearLaplacianSharpening(prewittMask, "Prewitt IV");
+        }
+
+        private void ApplyLinearLaplacianSharpening(float[,] mask, string title)
         {
 
             if (displayedImage == null || windowImgFocused == null)
@@ -409,28 +483,30 @@ namespace APO_Projekt
                 return;
             }
 
-            if (laplacianMask.GetLength(0) != 3 || laplacianMask.GetLength(1) != 3)
+            if (mask.GetLength(0) != 3 || mask.GetLength(1) != 3)
             {
                 MessageBox.Show("Invalid mask size. Must be 3x3.");
                 return;
             }
-            ConvolutionKernelF matrixKernel = new ConvolutionKernelF(laplacianMask);
+            ConvolutionKernelF matrixKernel = new ConvolutionKernelF(mask);
 
             try
             {
                 Mat sharpenedMat = new Mat();
+                System.Drawing.Point point = new System.Drawing.Point(-1, -1);
+
                 if (displayedImage.Size != sharpenedMat.Size)
                 {
                     sharpenedMat = displayedImage.Clone();
                 }
-                System.Drawing.Point point = new System.Drawing.Point(-1, -1);
+                
 
                 CvInvoke.Filter2D(displayedImage, sharpenedMat, matrixKernel, point, 0, selectedBorderType);
 
                 displayedImage = sharpenedMat;
                 windowImgFocused.mat = sharpenedMat;
                 windowImgFocused.img.Source = Imaging.CreateBitmapSourceFromHBitmap(sharpenedMat.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
-                windowImgFocused.Title = "(" + title + ") Linear Laplacian Sharpening";
+                windowImgFocused.Title = title;
                 windowImgFocused?.HistogramUpdate();
             }
             catch (Exception ex)
@@ -439,11 +515,6 @@ namespace APO_Projekt
                 Console.WriteLine("Exception details: " + ex.ToString());
             }
         }
-        private void PrewittEdgeDetection_Click(object sender, RoutedEventArgs e)
-        {
-          
-        }
-
         private void CustomLinearOperation_Click(object sender, RoutedEventArgs e)
         {
             Mask3x3 mask = new Mask3x3();
@@ -459,6 +530,12 @@ namespace APO_Projekt
                 int m8 = mask.M8;
                 int m9 = mask.M9;
 
+                /* float[,] customMast = {
+                 { m1, m2, m3 },
+                 {m4, m5, m6 },
+                 {m7, m8, m9 }
+             };
+                 ApplyLinearLaplacianSharpening(customMast, "Custom Linear Operation");*/
                 if (this.displayedImage == null || windowImgFocused == null)
                 {
                     MessageBox.Show("No image selected.");
@@ -469,20 +546,21 @@ namespace APO_Projekt
                 float[] kernelData = new float[] { m1, m2, m3, m4, m5, m6, m7, m8, m9 };
                 kernel.SetTo(kernelData);
 
+                System.Drawing.Point point = new System.Drawing.Point(-1, -1);
                 Mat sharpenedMat = new Mat();
                 if (displayedImage.Size != sharpenedMat.Size)
                 {
                     sharpenedMat = displayedImage.Clone();
                 }
-                CvInvoke.Filter2D(displayedImage, sharpenedMat, kernel, new System.Drawing.Point(-1, -1), 0, selectedBorderType);
+                CvInvoke.Filter2D(displayedImage, sharpenedMat, kernel, point, 0, selectedBorderType);
 
                 displayedImage = sharpenedMat;
                 windowImgFocused.mat = sharpenedMat;
                 windowImgFocused.img.Source = Imaging.CreateBitmapSourceFromHBitmap(sharpenedMat.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
                 windowImgFocused.Title = "Custom Linear Operation";
                 windowImgFocused?.HistogramUpdate();
-                
-               
+
+
             }
         }
 
