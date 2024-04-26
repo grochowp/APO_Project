@@ -1,0 +1,29 @@
+﻿<Window x:Class="APO_Projekt.Features.OperationSelector"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:APO_Projekt.Features"
+        mc:Ignorable="d"
+        Title="OperationSelector" Height="250" Width="200">
+    <Grid>
+        <ComboBox HorizontalAlignment="Center" Margin="0,28,0,0" VerticalAlignment="Top" Width="120" Name="cmbOperation">
+            <ComboBoxItem IsSelected="True">Add</ComboBoxItem>
+            <ComboBoxItem>Substract</ComboBoxItem>
+            <ComboBoxItem>Blend</ComboBoxItem>
+            <ComboBoxItem>AND</ComboBoxItem>
+            <ComboBoxItem>OR</ComboBoxItem>
+            <ComboBoxItem>NOT</ComboBoxItem>
+            <ComboBoxItem>XOR</ComboBoxItem>
+        </ComboBox>
+
+        <ComboBox HorizontalAlignment="Center" Margin="0,87,0,0" VerticalAlignment="Top" Width="120">
+            
+        </ComboBox>
+        <ComboBox HorizontalAlignment="Center" Margin="0,126,0,0" VerticalAlignment="Top" Width="120">
+            
+        </ComboBox>
+        <Button x:Name="ButtonMedianFiltration" Content="Next" HorizontalAlignment="Center" VerticalAlignment="Top" Width="46" Margin="0,179,0,0" Click="ButtonMedianFiltration_Click"/>
+
+    </Grid>
+</Window>

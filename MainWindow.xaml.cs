@@ -10,6 +10,10 @@ using Emgu.CV.Util;
 using System.Runtime.InteropServices;
 using System.Collections.Generic;
 using APO_Projekt.Features;
+using System.Windows.Controls;
+using System.Drawing;
+using static SkiaSharp.HarfBuzz.SKShaper;
+using System.Security.Policy;
 
 namespace APO_Projekt
 {
@@ -21,30 +25,56 @@ namespace APO_Projekt
     {
         public Mat? displayedImage;
         public WindowImgFocused? windowImgFocused;
-        private BorderType selectedBorderType = BorderType.Isolated; 
+        private BorderType selectedBorderType = BorderType.Isolated;
 
         public MainWindow()
-        { 
+        {
             InitializeComponent();
             WindowImgFocused.windowImgFocused += UpdateFocus;
             WindowImgFocused.windowImgClosed += ClearFocus;
         }
+        static double[,] Convolve(double[,] matrix1, double[,] matrix2)
+        {
+            int size = 5;
+            double[,] kernel = new double[size, size];
 
+            for (int i = 0; i < size; i++)
+            {
+                for (int j = 0; j < size; j++)
+                {
+                    double sum = 0;
+                    for (int k = 0; k < 3; k++)
+                    {
+                        for (int l = 0; l < 3; l++)
+                        {
+                            int x = i + k - 1;
+                            int y = j + l - 1;
+
+                            if (x >= 0 && x < 3 && y >= 0 && y < 3)
+                                sum += matrix1[k, l] * matrix2[x, y];
+                        }
+                    }
+                    kernel[i, j] = sum;
+                }
+            }
+
+            return kernel;
+        }
         private void BorderType_Isolated_Click(object sender, RoutedEventArgs e)
         {
-            
+
             selectedBorderType = BorderType.Isolated;
         }
 
         private void BorderType_Replicate_Click(object sender, RoutedEventArgs e)
         {
-            
+
             selectedBorderType = BorderType.Replicate;
         }
 
         private void BorderType_Reflect_Click(object sender, RoutedEventArgs e)
         {
-           
+
             selectedBorderType = BorderType.Reflect;
         }
 
@@ -319,7 +349,7 @@ namespace APO_Projekt
             Mat edgesMat = new Mat();
 
             CvInvoke.Sobel(displayedImage, edgesMat, DepthType.Cv8U, 1, 1, 3, 1, 1, selectedBorderType);
-                CvInvoke.BitwiseNot(edgesMat, edgesMat);
+            CvInvoke.BitwiseNot(edgesMat, edgesMat);
 
             displayedImage = edgesMat;
             windowImgFocused.mat = edgesMat;
@@ -362,7 +392,7 @@ namespace APO_Projekt
             CvInvoke.Canny(displayedImage, edgesMat, 100, 200);
 
             CvInvoke.BitwiseNot(edgesMat, edgesMat);
-           
+
             displayedImage = edgesMat;
             windowImgFocused.mat = edgesMat;
             windowImgFocused.img.Source = Imaging.CreateBitmapSourceFromHBitmap(edgesMat.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
@@ -400,11 +430,11 @@ namespace APO_Projekt
             ApplyLinearLaplacianSharpening(laplacianMask, "(mask 3) Linear Laplacian Sharpening");
         }
 
-      
+
         private void PrewittEdgeDetectionH_Click(object sender, RoutedEventArgs e)
         {
             float[,] prewittMask = {
-                {-1, 0, 1 }, 
+                {-1, 0, 1 },
                 {-1, 0, 1 },
                 {-1, 0, 1 }
             };
@@ -432,7 +462,7 @@ namespace APO_Projekt
         {
             float[,] prewittMask = {
                { -1, 0, 1 },
-               {-1, 0, 1 }, 
+               {-1, 0, 1 },
                {0, -1, 1 }
             };
             ApplyLinearLaplacianSharpening(prewittMask, "Prewitt SE");
@@ -499,7 +529,7 @@ namespace APO_Projekt
                 {
                     sharpenedMat = displayedImage.Clone();
                 }
-                
+
 
                 CvInvoke.Filter2D(displayedImage, sharpenedMat, matrixKernel, point, 0, selectedBorderType);
 
@@ -517,6 +547,11 @@ namespace APO_Projekt
         }
         private void CustomLinearOperation_Click(object sender, RoutedEventArgs e)
         {
+            if (this.displayedImage == null || windowImgFocused == null)
+            {
+                MessageBox.Show("No image selected.");
+                return;
+            }
             Mask3x3 mask = new Mask3x3();
             if (mask.ShowDialog() == true)
             {
@@ -537,11 +572,6 @@ namespace APO_Projekt
              };
                  ApplyLinearLaplacianSharpening(customMast, "Custom Linear Operation");*/
 
-                if (this.displayedImage == null || windowImgFocused == null)
-                {
-                    MessageBox.Show("No image selected.");
-                    return;
-                }
 
                 Mat kernel = new Mat(3, 3, DepthType.Cv32F, 1);
                 float[] kernelData = new float[] { m1, m2, m3, m4, m5, m6, m7, m8, m9 };
@@ -567,15 +597,16 @@ namespace APO_Projekt
 
         private void MedianFiltration_Click(object sender, EventArgs e)
         {
+            if (this.displayedImage == null || windowImgFocused == null)
+            {
+                MessageBox.Show("No image selected.");
+                return;
+            }
             MedianFiltration mask = new MedianFiltration();
             if (mask.ShowDialog() == true)
             {
 
-                if (this.displayedImage == null || windowImgFocused == null)
-                {
-                    MessageBox.Show("No image selected.");
-                    return;
-                }
+
 
                 int kernelSize = mask.Mask;
                 int borderSize = kernelSize / 2;
@@ -592,10 +623,154 @@ namespace APO_Projekt
                 displayedImage = sharpenedMat;
                 windowImgFocused.mat = sharpenedMat;
                 windowImgFocused.img.Source = Imaging.CreateBitmapSourceFromHBitmap(sharpenedMat.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
-                windowImgFocused.Title = "Custom Linear Operation";
+                windowImgFocused.Title = "Median Filtration";
                 windowImgFocused?.HistogramUpdate();
 
 
+            }
+        }
+
+        private void LinearFiltering_Click(object sender, RoutedEventArgs e)
+        {
+
+            if (this.displayedImage == null || windowImgFocused == null)
+            {
+                MessageBox.Show("No image selected.");
+                return;
+            }
+
+            Mask3x3 maskSmooth = new Mask3x3();
+            if (maskSmooth.ShowDialog() == true)
+            {
+                int m1 = maskSmooth.M1;
+                int m2 = maskSmooth.M2;
+                int m3 = maskSmooth.M3;
+                int m4 = maskSmooth.M4;
+                int m5 = maskSmooth.M5;
+                int m6 = maskSmooth.M6;
+                int m7 = maskSmooth.M7;
+                int m8 = maskSmooth.M8;
+                int m9 = maskSmooth.M9;
+
+
+                Mask3x3 maskSharp = new Mask3x3();
+                if (maskSharp.ShowDialog() == true)
+                {
+
+                    int m1sharp = maskSharp.M1;
+                    int m2sharp = maskSharp.M2;
+                    int m3sharp = maskSharp.M3;
+                    int m4sharp = maskSharp.M4;
+                    int m5sharp = maskSharp.M5;
+                    int m6sharp = maskSharp.M6;
+                    int m7sharp = maskSharp.M7;
+                    int m8sharp = maskSharp.M8;
+                    int m9sharp = maskSharp.M9;
+                    double[,] kernel1 = new double[,] { { m1, m2, m3 }, { m4, m5, m6 }, { m7, m8, m9 } };
+                    double[,] kernel2 = new double[,] { { m1sharp, m2sharp, m3sharp }, { m4sharp, m5sharp, m6sharp }, { m7sharp, m8sharp, m9sharp } };
+
+                    Mat kernelSmooth = new Mat(3, 3, DepthType.Cv32F, 1);
+                    double[] smoothedKernelData = new double[] { m1, m2, m3, m4, m5, m6, m7, m8, m9 };
+                    kernelSmooth.SetTo(smoothedKernelData);
+
+                    Mat kernelSharp = new Mat(3, 3, DepthType.Cv32F, 1);
+                    double[] sharpedKernelData = new double[] { m1sharp, m2sharp, m3sharp, m4sharp, m5sharp, m6sharp, m7sharp, m8sharp, m9sharp };
+                    kernelSharp.SetTo(sharpedKernelData);
+
+                    // Wygładzanie
+                    Mat smoothedMat = displayedImage.Clone();
+                    CvInvoke.Filter2D(displayedImage, smoothedMat, kernelSmooth, new System.Drawing.Point(-1, -1), 0, selectedBorderType);
+
+                    // Wyostrzanie
+                    Mat sharpenedMat = displayedImage.Clone();
+                    CvInvoke.Filter2D(smoothedMat, sharpenedMat, kernelSharp, new System.Drawing.Point(-1, -1), 0, selectedBorderType);
+
+
+                    Mat result5x5 = displayedImage.Clone();
+
+                    double[,] result = Convolve(kernel1, kernel2);
+
+                    double[] kernelData = new double[5 * 5];
+                    int index = 0;
+
+                    for (int i = 0; i < 5; i++)
+                    {
+                        for (int j = 0; j < 5; j++)
+                        {
+                            kernelData[index++] = result[i, j];
+                        }
+                    }
+
+
+                    Mat kernelMat = new Mat(5, 5, DepthType.Cv32F, 1);
+                    kernelMat.SetTo(kernelData);
+
+                    CvInvoke.Filter2D(displayedImage, result5x5, kernelMat, new System.Drawing.Point(-1, -1), 0, selectedBorderType);
+
+
+                    displayedImage = sharpenedMat;
+                    windowImgFocused.mat = sharpenedMat;
+                    windowImgFocused.img.Source = Imaging.CreateBitmapSourceFromHBitmap(sharpenedMat.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+                    windowImgFocused.Title = "3x3 masks operation";
+                    windowImgFocused?.HistogramUpdate();
+
+                    BitmapSource bitmapSource = Imaging.CreateBitmapSourceFromHBitmap(result5x5.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+                    WindowImgFocused imgWindow = new WindowImgFocused(result5x5, bitmapSource, "5x5 mask operation");
+                    imgWindow.Show();
+
+                }
+            }
+        }
+
+        private void PointOperation_Click(object sender, RoutedEventArgs e)
+        {
+            // Upewnij się, że obraz został wczytany
+            if (this.displayedImage == null || windowImgFocused == null)
+            {
+                MessageBox.Show("No image selected.");
+                return;
+            }
+
+            // Utwórz nowe okno dialogowe, aby użytkownik mógł wybrać drugi obraz (potrzebny dla mieszania)
+            OperationSelector operation = new OperationSelector();
+
+            if (operation.ShowDialog() == true)
+            {
+
+                Mat secondImage = new Mat();
+                // Wykonaj odpowiednią operację punktową
+                switch (((Button)sender).Name)
+                {
+                    case "AdditionButton":
+                        CvInvoke.Add(displayedImage, secondImage, displayedImage);
+                        break;
+                    case "SubtractionButton":
+                        CvInvoke.Subtract(displayedImage, secondImage, displayedImage);
+                        break;
+                    case "BlendingButton":
+                        CvInvoke.AddWeighted(displayedImage, 0.5, secondImage, 0.5, 0, displayedImage);
+                        break;
+                    case "AndButton":
+                        CvInvoke.BitwiseAnd(displayedImage, secondImage, displayedImage);
+                        break;
+                    case "OrButton":
+                        CvInvoke.BitwiseOr(displayedImage, secondImage, displayedImage);
+                        break;
+                    case "NotButton":
+                        CvInvoke.BitwiseNot(displayedImage, displayedImage);
+                        break;
+                    case "XorButton":
+                        CvInvoke.BitwiseXor(displayedImage, secondImage, displayedImage);
+                        break;
+                    default:
+                        break;
+                }
+
+                // Aktualizuj wyświetlanie obrazu i histogram
+                windowImgFocused.mat = displayedImage;
+                windowImgFocused.img.Source = Imaging.CreateBitmapSourceFromHBitmap(displayedImage.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+                windowImgFocused.Title = "Point Operation Result";
+                windowImgFocused?.HistogramUpdate();
             }
         }
     }

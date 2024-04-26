@@ -50,7 +50,8 @@
                 <MenuItem Header="Custom Linear Operation" Click="CustomLinearOperation_Click"/>
 
                 <MenuItem Header="Median Filtration" Click="MedianFiltration_Click"/>
-
+                <MenuItem Header="Linear Filtering" Click="LinearFiltering_Click"/>
+                <MenuItem Header="Point Operation" Click="PointOperation_Click"/>
                 <MenuItem Header="Border Type">
                     <MenuItem Header="Isolated" Click="BorderType_Isolated_Click"/>
                     <MenuItem Header="Replicate" Click="BorderType_Replicate_Click"/>

@@ -82,3 +82,5 @@ C:\Users\Patryk\Desktop\c#\APO_Projekt\obj\Debug\net7.0-windows7.0\Features\Mask
 C:\Users\Patryk\Desktop\c#\APO_Projekt\obj\Debug\net7.0-windows7.0\Features\Mask3x3.baml
 C:\Users\Patryk\Desktop\c#\APO_Projekt\obj\Debug\net7.0-windows7.0\Features\MedianFiltration.g.cs
 C:\Users\Patryk\Desktop\c#\APO_Projekt\obj\Debug\net7.0-windows7.0\Features\MedianFiltration.baml
+C:\Users\Patryk\Desktop\c#\APO_Projekt\obj\Debug\net7.0-windows7.0\Features\OperationSelector.g.cs
+C:\Users\Patryk\Desktop\c#\APO_Projekt\obj\Debug\net7.0-windows7.0\Features\OperationSelector.baml

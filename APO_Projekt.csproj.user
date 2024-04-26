@@ -19,6 +19,9 @@
     <Compile Update="Features\MedianFiltration.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Features\OperationSelector.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Features\StretchData.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -37,6 +40,9 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Features\MedianFiltration.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Features\OperationSelector.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="MainWindow.xaml">
