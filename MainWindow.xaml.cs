@@ -536,6 +536,7 @@ namespace APO_Projekt
                  {m7, m8, m9 }
              };
                  ApplyLinearLaplacianSharpening(customMast, "Custom Linear Operation");*/
+
                 if (this.displayedImage == null || windowImgFocused == null)
                 {
                     MessageBox.Show("No image selected.");
@@ -564,6 +565,39 @@ namespace APO_Projekt
             }
         }
 
+        private void MedianFiltration_Click(object sender, EventArgs e)
+        {
+            MedianFiltration mask = new MedianFiltration();
+            if (mask.ShowDialog() == true)
+            {
+
+                if (this.displayedImage == null || windowImgFocused == null)
+                {
+                    MessageBox.Show("No image selected.");
+                    return;
+                }
+
+                int kernelSize = mask.Mask;
+                int borderSize = kernelSize / 2;
+
+                Mat sharpenedMat = new Mat();
+                if (displayedImage.Size != sharpenedMat.Size)
+                {
+                    sharpenedMat = displayedImage.Clone();
+                }
+
+                CvInvoke.CopyMakeBorder(displayedImage, sharpenedMat, borderSize, borderSize, borderSize, borderSize, selectedBorderType);
+                CvInvoke.MedianBlur(displayedImage, sharpenedMat, kernelSize);
+
+                displayedImage = sharpenedMat;
+                windowImgFocused.mat = sharpenedMat;
+                windowImgFocused.img.Source = Imaging.CreateBitmapSourceFromHBitmap(sharpenedMat.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+                windowImgFocused.Title = "Custom Linear Operation";
+                windowImgFocused?.HistogramUpdate();
+
+
+            }
+        }
     }
 }
 

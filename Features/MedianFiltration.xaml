@@ -1,0 +1,18 @@
+﻿<Window x:Class="APO_Projekt.Features.MedianFiltration"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:APO_Projekt.Features"
+        mc:Ignorable="d"
+        Title="MedianFiltration" Height="250" Width="200">
+    <Grid>
+        <Button x:Name="ButtonMedianFiltration" Content="Next" HorizontalAlignment="Center" VerticalAlignment="Top" Width="46" Margin="0,179,0,0" Click="ButtonMedianFiltration_Click"/>
+        <ComboBox HorizontalAlignment="Center" Margin="0,42,0,0" VerticalAlignment="Top" Width="120" Name="cmbMask">
+            <ComboBoxItem IsSelected="True">3x3</ComboBoxItem>
+            <ComboBoxItem>5x5</ComboBoxItem>
+            <ComboBoxItem>7x7</ComboBoxItem>
+        </ComboBox>
+
+    </Grid>
+</Window>
