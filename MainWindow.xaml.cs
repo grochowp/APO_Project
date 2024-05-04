@@ -27,12 +27,16 @@ namespace APO_Projekt
         public WindowImgFocused? windowImgFocused;
         private BorderType selectedBorderType = BorderType.Isolated;
 
+        private List<WindowImgFocused> imagesList = new List<WindowImgFocused>();
+
+
         public MainWindow()
         {
             InitializeComponent();
             WindowImgFocused.windowImgFocused += UpdateFocus;
             WindowImgFocused.windowImgClosed += ClearFocus;
         }
+
         static double[,] Convolve(double[,] matrix1, double[,] matrix2)
         {
             int size = 5;
@@ -102,8 +106,9 @@ namespace APO_Projekt
                 string fileName = Image.FileName;
                 Mat ImageOpened = CvInvoke.Imread(fileName, ImreadModes.Grayscale);
                 BitmapSource bitmapSource = Imaging.CreateBitmapSourceFromHBitmap(ImageOpened.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
-                WindowImgFocused imgWindow = new WindowImgFocused(ImageOpened, bitmapSource, "Mono");
+                WindowImgFocused imgWindow = new WindowImgFocused(ImageOpened, bitmapSource, "Mono " + fileName);
                 imgWindow.Show();
+                imagesList.Add(imgWindow);
             }
         }
         private void ImportColor_Click(object sender, RoutedEventArgs e)
@@ -118,7 +123,7 @@ namespace APO_Projekt
                 string fileName = Image.FileName;
                 Mat ImageOpened = CvInvoke.Imread(fileName, ImreadModes.Color);
                 BitmapSource bitmapSource = Imaging.CreateBitmapSourceFromHBitmap(ImageOpened.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
-                WindowImgFocused image = new WindowImgFocused(ImageOpened, bitmapSource, "Color");
+                WindowImgFocused image = new WindowImgFocused(ImageOpened, bitmapSource, "Color " + fileName);
                 image.Show();
             }
         }
@@ -134,6 +139,9 @@ namespace APO_Projekt
                 this.windowImgFocused.mat = mat;
                 windowImgFocused.Title = "Mono";
                 this.windowImgFocused.img.Source = Imaging.CreateBitmapSourceFromHBitmap(mat.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+
+                imagesList.Add(windowImgFocused);
+
             }
 
         }
@@ -724,55 +732,65 @@ namespace APO_Projekt
 
         private void PointOperation_Click(object sender, RoutedEventArgs e)
         {
-            // Upewnij się, że obraz został wczytany
+
+
             if (this.displayedImage == null || windowImgFocused == null)
             {
                 MessageBox.Show("No image selected.");
                 return;
             }
 
-            // Utwórz nowe okno dialogowe, aby użytkownik mógł wybrać drugi obraz (potrzebny dla mieszania)
-            OperationSelector operation = new OperationSelector();
+            OperationSelector operation = new OperationSelector(imagesList);
 
             if (operation.ShowDialog() == true)
             {
+                WindowImgFocused firstImage = imagesList[operation.FirstImgIndex];
+                WindowImgFocused secondImage = imagesList[operation.SecondImgIndex];
 
-                Mat secondImage = new Mat();
-                // Wykonaj odpowiednią operację punktową
-                switch (((Button)sender).Name)
+                Mat resultImage = new Mat();
+                string selectedOperation = operation.Operation;
+                double blend = operation.Blend;
+                if (firstImage.mat?.Size != secondImage.mat?.Size)
                 {
-                    case "AdditionButton":
-                        CvInvoke.Add(displayedImage, secondImage, displayedImage);
+                    MessageBox.Show("Images must have the same size for this operation.");
+                    return;
+                }
+
+                switch (selectedOperation)
+                {
+                    case "Add":
+                        CvInvoke.Add(firstImage.mat, secondImage.mat, resultImage);
                         break;
-                    case "SubtractionButton":
-                        CvInvoke.Subtract(displayedImage, secondImage, displayedImage);
+                    case "Substract":
+                        CvInvoke.Subtract(firstImage.mat, secondImage.mat, resultImage);
                         break;
-                    case "BlendingButton":
-                        CvInvoke.AddWeighted(displayedImage, 0.5, secondImage, 0.5, 0, displayedImage);
+                    case "Blend":
+                        CvInvoke.AddWeighted(firstImage.mat, blend, secondImage.mat, 1 - blend, 0, resultImage);
                         break;
-                    case "AndButton":
-                        CvInvoke.BitwiseAnd(displayedImage, secondImage, displayedImage);
+                    case "AND":
+                        CvInvoke.BitwiseAnd(firstImage.mat, secondImage.mat, resultImage);
                         break;
-                    case "OrButton":
-                        CvInvoke.BitwiseOr(displayedImage, secondImage, displayedImage);
+                    case "OR":
+                        CvInvoke.BitwiseOr(firstImage.mat, secondImage.mat, resultImage);
                         break;
-                    case "NotButton":
-                        CvInvoke.BitwiseNot(displayedImage, displayedImage);
+                    case "NOT":
+                        CvInvoke.BitwiseNot(firstImage.mat, resultImage);
                         break;
-                    case "XorButton":
-                        CvInvoke.BitwiseXor(displayedImage, secondImage, displayedImage);
+                    case "XOR":
+                        CvInvoke.BitwiseXor(firstImage.mat, secondImage.mat, resultImage);
                         break;
                     default:
                         break;
                 }
 
-                // Aktualizuj wyświetlanie obrazu i histogram
-                windowImgFocused.mat = displayedImage;
-                windowImgFocused.img.Source = Imaging.CreateBitmapSourceFromHBitmap(displayedImage.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
-                windowImgFocused.Title = "Point Operation Result";
-                windowImgFocused?.HistogramUpdate();
+                BitmapSource bitmapSource = Imaging.CreateBitmapSourceFromHBitmap(resultImage.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+                WindowImgFocused imgWindow = new WindowImgFocused(resultImage, bitmapSource, selectedOperation);
+                imgWindow.Show();
+                imagesList.Add(imgWindow);
             }
         }
+
     }
 }
+
 

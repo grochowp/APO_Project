@@ -19,17 +19,28 @@ namespace APO_Projekt.Features
     /// </summary>
     public partial class OperationSelector : Window
     {
-        public OperationSelector()
+        public OperationSelector(List<WindowImgFocused> imagesList)
         {
             InitializeComponent();
+            foreach (var image in imagesList)
+            {
+                firstImg_cmb.Items.Add(image.Title);
+                secondImg_cmb.Items.Add(image.Title);
+            }
         }
 
-        public int Operation;
+        public string Operation;
+        public List<WindowImgFocused> ImagesList;
+        public int FirstImgIndex, SecondImgIndex;
+        public double Blend;
 
         private void ButtonMedianFiltration_Click(object sender, RoutedEventArgs e)
         {
             ComboBoxItem typeItem = (ComboBoxItem)cmbOperation.SelectedItem;
-            
+            Operation = typeItem.Content.ToString();
+            FirstImgIndex = firstImg_cmb.SelectedIndex;
+            SecondImgIndex = secondImg_cmb.SelectedIndex;
+            double.TryParse(blendInput.Text.ToString(), out Blend);
 
             this.DialogResult = true;
         }
