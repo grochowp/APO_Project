@@ -7,12 +7,13 @@
         mc:Ignorable="d"
         Title="MedianFiltration" Height="250" Width="200">
     <Grid>
-        <ComboBox HorizontalAlignment="Center" Margin="0,42,0,0" VerticalAlignment="Top" Width="120" Name="cmbMask">
+        <ComboBox HorizontalAlignment="Center" Margin="0,62,0,0" VerticalAlignment="Top" Width="120" Name="cmbMask">
             <ComboBoxItem IsSelected="True">3x3</ComboBoxItem>
             <ComboBoxItem>5x5</ComboBoxItem>
             <ComboBoxItem>7x7</ComboBoxItem>
         </ComboBox>
         <Button x:Name="ButtonMedianFiltration" Content="Next" HorizontalAlignment="Center" VerticalAlignment="Top" Width="46" Margin="0,179,0,0" Click="ButtonMedianFiltration_Click"/>
+        <Label Content="Maska:" HorizontalAlignment="Left" Margin="73,27,0,0" VerticalAlignment="Top"/>
 
     </Grid>
 </Window>

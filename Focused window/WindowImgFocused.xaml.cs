@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media.Imaging;
+using APO_Projekt.Features;
 using Emgu.CV;
 using Emgu.CV.CvEnum;
 using Emgu.CV.Structure;
@@ -31,7 +33,8 @@ namespace APO_Projekt
 
         }
 
-        public void ImgClosed(object? sender, System.ComponentModel.CancelEventArgs e) {
+        public void ImgClosed(object? sender, System.ComponentModel.CancelEventArgs e)
+        {
             windowImgClosed?.Invoke();
             this.mat = null;
             this.hist?.Close();
@@ -39,7 +42,7 @@ namespace APO_Projekt
 
         public void HistogramUpdate()
         {
-            if(this.mat!= null)
+            if (this.mat != null)
             {
                 this.hist?.HistogramShow(this.mat);
             }
@@ -106,8 +109,8 @@ namespace APO_Projekt
                 }
             }
 
-           this.mat = grayImage.Mat;
-           this.img.Source = Imaging.CreateBitmapSourceFromHBitmap(this.mat.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+            this.mat = grayImage.Mat;
+            this.img.Source = Imaging.CreateBitmapSourceFromHBitmap(this.mat.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
 
         }
 
@@ -183,8 +186,33 @@ namespace APO_Projekt
             imgWindow.Show();
         }
 
+        public void ApplyLinearSharpening(float[,] mask, BorderType selectedBorderType, string title)
+        {
+            ConvolutionKernelF matrixKernel = new ConvolutionKernelF(mask);
 
+            try
+            {
+                Mat sharpenedMat = new Mat();
+                System.Drawing.Point point = new System.Drawing.Point(-1, -1);
 
+                if (mat.Size != sharpenedMat.Size)
+                {
+                    sharpenedMat = mat.Clone();
+                }
+
+                CvInvoke.Filter2D(mat, sharpenedMat, matrixKernel, point, 0, selectedBorderType);
+
+                mat = sharpenedMat;
+                img.Source = Imaging.CreateBitmapSourceFromHBitmap(sharpenedMat.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+                Title = title;
+                HistogramUpdate();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error applying linear sharpening: " + ex.Message);
+                Console.WriteLine("Exception details: " + ex.ToString());
+            }
+        }
     }
 }
 

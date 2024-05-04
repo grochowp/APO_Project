@@ -9,15 +9,16 @@
     <Grid RenderTransformOrigin="0.5,0.5">
 
         <Button x:Name="Button3x3" Content="Next" HorizontalAlignment="Left" Margin="109,290,0,0" VerticalAlignment="Top" Height="42" Width="75" Click="Button3x3_Click"/>
-        <TextBox x:Name="m1" HorizontalAlignment="Left" Margin="61,63,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="25" Height="25" Text="0"/>
-        <TextBox x:Name="m2" HorizontalAlignment="Left" Margin="135,61,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="25" Height="25" Text="0"/>
-        <TextBox x:Name="m3" HorizontalAlignment="Left" Margin="215,61,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="25" Height="25" Text="0"/>
-        <TextBox x:Name="m4" HorizontalAlignment="Left" Margin="61,119,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="25" Height="25" Text="0"/>
-        <TextBox x:Name="m5" HorizontalAlignment="Left" Margin="135,119,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="25" Height="25" Text="0"/>
-        <TextBox x:Name="m6" HorizontalAlignment="Left" Margin="215,120,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="25" Height="25" Text="0"/>
-        <TextBox x:Name="m7" HorizontalAlignment="Left" Margin="61,0,0,0" TextWrapping="Wrap" VerticalAlignment="Center" Width="25" Height="25" Text="0"/>
-        <TextBox x:Name="m8" HorizontalAlignment="Left" Margin="134,0,0,0" TextWrapping="Wrap" VerticalAlignment="Center" Width="25" Height="25" Text="0"/>
-        <TextBox x:Name="m9" HorizontalAlignment="Left" Margin="215,0,0,0" TextWrapping="Wrap" VerticalAlignment="Center" Width="25" Height="25" Text="0"/>
+        <TextBox x:Name="m1" HorizontalAlignment="Left" Margin="61,82,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="25" Height="25" Text="0"/>
+        <TextBox x:Name="m2" HorizontalAlignment="Center" Margin="0,82,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="24" Height="25" Text="0"/>
+        <TextBox x:Name="m3" HorizontalAlignment="Left" Margin="215,82,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="25" Height="25" Text="0"/>
+        <TextBox x:Name="m4" HorizontalAlignment="Left" Margin="61,140,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="25" Height="25" Text="0"/>
+        <TextBox x:Name="m5" HorizontalAlignment="Center" Margin="0,140,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="25" Height="25" Text="0"/>
+        <TextBox x:Name="m6" HorizontalAlignment="Left" Margin="215,141,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="25" Height="25" Text="0"/>
+        <TextBox x:Name="m7" HorizontalAlignment="Left" Margin="61,201,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="25" Height="25" Text="0"/>
+        <TextBox x:Name="m8" HorizontalAlignment="Center" Margin="0,201,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="25" Height="25" Text="0"/>
+        <TextBox x:Name="m9" HorizontalAlignment="Left" Margin="215,201,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="25" Height="25" Text="0"/>
+        <Label Content="Wprowadź maskę: " HorizontalAlignment="Left" Margin="87,29,0,0" VerticalAlignment="Top"/>
 
     </Grid>
 </Window>

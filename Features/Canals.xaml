@@ -5,12 +5,12 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:APO_Projekt"
         mc:Ignorable="d"
-        Title="Canals" Height="450" Width="800">
+        Title="Canals" Height="250" Width="300">
     <Grid>
-        <Grid x:Name="___Brak_nazwy_" Margin="0,0,420,158">
+        <Grid x:Name="___Brak_nazwy_">
             <Label Content="Poziom szarości =" HorizontalAlignment="Left" Margin="20,35,0,0" VerticalAlignment="Top"/>
             <TextBox x:Name="level_text" HorizontalAlignment="Left" Margin="130,39,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
-            <Button x:Name="Next" Content="Next" HorizontalAlignment="Left" Margin="115,122,0,0" VerticalAlignment="Top" Height="40" Width="90" Click="Next_Click"/>
+            <Button x:Name="Next" Content="Next" HorizontalAlignment="Left" Margin="100,149,0,0" VerticalAlignment="Top" Height="40" Width="90" Click="Next_Click"/>
 
         </Grid>
 
