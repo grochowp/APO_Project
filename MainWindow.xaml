@@ -8,9 +8,11 @@
         Title="MainWindow" Height="450" Width="800">
     <Grid>
         <Menu>
-            <MenuItem Header="Lab1">
+            <MenuItem Header="Import">
                 <MenuItem Header="Import color" Click="ImportColor_Click"/>
                 <MenuItem Header="Import mono" Click="ImportMono_Click"/>
+            </MenuItem>
+            <MenuItem Header="Lab1">
                 <MenuItem Header="Color to gray" Click="ColorToGray_Click"/>
                 <MenuItem Header="Negation" Click="Negation_Click"/>
                 <MenuItem Header="Histogram" Click="Histogram_Click"/>
@@ -53,20 +55,19 @@
                 <MenuItem Header="Linear Filtering" Click="LinearFiltering_Click"/>
                 <MenuItem Header="Point Operation" Click="PointOperation_Click"/>
                 <MenuItem Header="Border Type">
-                    <MenuItem Header="Isolated" Click="BorderType_Isolated_Click"/>
-                    <MenuItem Header="Replicate" Click="BorderType_Replicate_Click"/>
-                    <MenuItem Header="Reflect" Click="BorderType_Reflect_Click"/>
+                    <MenuItem IsChecked="True" x:Name="MenuItem_Default" Header="Default" Click="BorderType_Default_Click"/>
+                    <MenuItem x:Name="MenuItem_Isolated" Header="Isolated" Click="BorderType_Isolated_Click"/>
+                    <MenuItem x:Name="MenuItem_Replicate" Header="Replicate" Click="BorderType_Replicate_Click"/>
+                    <MenuItem x:Name="MenuItem_Reflect" Header="Reflect" Click="BorderType_Reflect_Click"/>
                 </MenuItem>
             </MenuItem>
             <MenuItem Header="Lab3">
-
+                <MenuItem Header="Morphology" Click="Morphology_Click"/>
             </MenuItem>
             <MenuItem Header="Lab4">
 
             </MenuItem>
-            <MenuItem Header="Lab5">
-
-            </MenuItem>
+           
         </Menu>
     </Grid>
 </Window>

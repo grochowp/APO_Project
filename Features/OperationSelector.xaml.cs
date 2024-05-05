@@ -19,7 +19,7 @@ namespace APO_Projekt.Features
     /// </summary>
     public partial class OperationSelector : Window
     {
-        public OperationSelector(List<WindowImgFocused> imagesList)
+        public OperationSelector(List<Operations> imagesList)
         {
             InitializeComponent();
             foreach (var image in imagesList)
@@ -30,7 +30,7 @@ namespace APO_Projekt.Features
         }
 
         public string Operation;
-        public List<WindowImgFocused> ImagesList;
+        public List<Operations> ImagesList;
         public int FirstImgIndex, SecondImgIndex;
         public double Blend;
 

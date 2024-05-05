@@ -19,13 +19,16 @@
     <Compile Update="Features\MedianFiltration.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Features\Morphology.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Features\OperationSelector.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Features\StretchData.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Focused window\WindowImgFocused.xaml.cs">
+    <Compile Update="Focused window\Operations.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
@@ -42,6 +45,9 @@
     <Page Update="Features\MedianFiltration.xaml">
       <SubType>Designer</SubType>
     </Page>
+    <Page Update="Features\Morphology.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Update="Features\OperationSelector.xaml">
       <SubType>Designer</SubType>
     </Page>
@@ -51,7 +57,7 @@
     <Page Update="Features\StretchData.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="Focused window\WindowImgFocused.xaml">
+    <Page Update="Focused window\Operations.xaml">
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>

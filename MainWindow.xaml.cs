@@ -24,74 +24,71 @@ namespace APO_Projekt
     public partial class MainWindow : Window
     {
         public Mat? displayedImage;
-        public WindowImgFocused? windowImgFocused;
+        public Operations? operations;
         private BorderType selectedBorderType = BorderType.Isolated;
 
-        private List<WindowImgFocused> imagesList = new List<WindowImgFocused>();
+        private List<Operations> imagesList = new List<Operations>();
 
 
         public MainWindow()
         {
             InitializeComponent();
-            WindowImgFocused.windowImgFocused += UpdateFocus;
-            WindowImgFocused.windowImgClosed += ClearFocus;
+            Operations.windowImgFocused += UpdateFocus;
+            Operations.windowImgClosed += ClearFocus;
         }
 
-        static double[,] Convolve(double[,] matrix1, double[,] matrix2)
+        
+
+        private void BorderType_Default_Click(object sender, RoutedEventArgs e)
         {
-            int size = 5;
-            double[,] kernel = new double[size, size];
+            selectedBorderType = BorderType.Default;
 
-            for (int i = 0; i < size; i++)
-            {
-                for (int j = 0; j < size; j++)
-                {
-                    double sum = 0;
-                    for (int k = 0; k < 3; k++)
-                    {
-                        for (int l = 0; l < 3; l++)
-                        {
-                            int x = i + k - 1;
-                            int y = j + l - 1;
-
-                            if (x >= 0 && x < 3 && y >= 0 && y < 3)
-                                sum += matrix1[k, l] * matrix2[x, y];
-                        }
-                    }
-                    kernel[i, j] = sum;
-                }
-            }
-
-            return kernel;
+            MenuItem_Default.IsChecked = true;
+            MenuItem_Isolated.IsChecked = false;
+            MenuItem_Replicate.IsChecked = false;
+            MenuItem_Reflect.IsChecked = false;
         }
         private void BorderType_Isolated_Click(object sender, RoutedEventArgs e)
         {
-
             selectedBorderType = BorderType.Isolated;
+
+            MenuItem_Default.IsChecked = false;
+            MenuItem_Isolated.IsChecked = true;
+            MenuItem_Replicate.IsChecked = false;
+            MenuItem_Reflect.IsChecked = false;
         }
 
         private void BorderType_Replicate_Click(object sender, RoutedEventArgs e)
         {
-
             selectedBorderType = BorderType.Replicate;
+
+            MenuItem_Default.IsChecked = false;
+            MenuItem_Isolated.IsChecked = false;
+            MenuItem_Replicate.IsChecked = true;
+            MenuItem_Reflect.IsChecked = false;
         }
 
         private void BorderType_Reflect_Click(object sender, RoutedEventArgs e)
         {
-
             selectedBorderType = BorderType.Reflect;
+
+            MenuItem_Default.IsChecked = false;
+            MenuItem_Isolated.IsChecked = false;
+            MenuItem_Replicate.IsChecked = false;
+            MenuItem_Reflect.IsChecked = true;
         }
 
+        //  LAB 1
 
-        private void UpdateFocus(Mat mat, WindowImgFocused windowImg)
+        private void UpdateFocus(Mat mat, Operations windowImg)
         {
             this.displayedImage = mat;
-            this.windowImgFocused = windowImg;
+            this.operations = windowImg;
         }
         private void ClearFocus()
         {
             this.displayedImage = null;
-            this.windowImgFocused = null;
+            this.operations = null;
         }
 
         private void ImportMono_Click(object sender, RoutedEventArgs e)
@@ -99,14 +96,14 @@ namespace APO_Projekt
             OpenFileDialog Image = new OpenFileDialog();
 
             Image.DefaultExt = ".bmp";
-            Image.Filter = "PNG Files (*.png)|*.png|JPG Files (*.jpg)|*.jpg";
+            Image.Filter = "JPG/PNG Files (*.jpeg, *.jpg, *.png, *.bmp)|*.jpeg;*.jpg;*.png;*.bmp|PNG Files (*.png)|*.png|JPG Files (*.jpg)|*.jpg";
             if (Image.ShowDialog() == true)
 
             {
                 string fileName = Image.FileName;
                 Mat ImageOpened = CvInvoke.Imread(fileName, ImreadModes.Grayscale);
                 BitmapSource bitmapSource = Imaging.CreateBitmapSourceFromHBitmap(ImageOpened.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
-                WindowImgFocused imgWindow = new WindowImgFocused(ImageOpened, bitmapSource, "Mono " + fileName);
+                Operations imgWindow = new Operations(ImageOpened, bitmapSource, "Mono " + fileName);
                 imgWindow.Show();
                 imagesList.Add(imgWindow);
             }
@@ -116,31 +113,31 @@ namespace APO_Projekt
             OpenFileDialog Image = new OpenFileDialog();
 
             Image.DefaultExt = ".bmp";
-            Image.Filter = "JPG/PNG Files (*.jpg, *.png, *.bmp)|*.jpg;*.png;*.bmp|PNG Files (*.png)|*.png|JPEG Files (*.jpg)|*.jpg";
+            Image.Filter = "JPG/PNG Files (*.jpeg, *.jpg, *.png, *.bmp)|*.jpeg;*.jpg;*.png;*.bmp|PNG Files (*.png)|*.png|JPEG Files (*.jpg)|*.jpg";
             if (Image.ShowDialog() == true)
 
             {
                 string fileName = Image.FileName;
                 Mat ImageOpened = CvInvoke.Imread(fileName, ImreadModes.Color);
                 BitmapSource bitmapSource = Imaging.CreateBitmapSourceFromHBitmap(ImageOpened.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
-                WindowImgFocused image = new WindowImgFocused(ImageOpened, bitmapSource, "Color " + fileName);
+                Operations image = new Operations(ImageOpened, bitmapSource, "Color " + fileName);
                 image.Show();
             }
         }
         private void ColorToGray_Click(object sender, RoutedEventArgs e)
         {
-            if (this.displayedImage == null || this.windowImgFocused == null) MessageBox.Show("no obrazek?");
+            if (this.displayedImage == null || this.operations == null) MessageBox.Show("no obrazek?");
             else if (this.displayedImage.NumberOfChannels == 1) MessageBox.Show("?");
             else
             {
                 Mat mat = new Mat();
                 CvInvoke.CvtColor(this.displayedImage, mat, ColorConversion.Bgr2Gray);
                 this.displayedImage = mat;
-                this.windowImgFocused.mat = mat;
-                windowImgFocused.Title = "Mono";
-                this.windowImgFocused.img.Source = Imaging.CreateBitmapSourceFromHBitmap(mat.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+                this.operations.mat = mat;
+                operations.Title = "Mono";
+                this.operations.img.Source = Imaging.CreateBitmapSourceFromHBitmap(mat.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
 
-                imagesList.Add(windowImgFocused);
+                imagesList.Add(operations);
 
             }
 
@@ -148,7 +145,7 @@ namespace APO_Projekt
         private void Negation_Click(object obj, RoutedEventArgs e)
         {
             //if (this.imageMat.NumberOfChannels != 1) this.ColorToGray_Click(obj, e);
-            if (this.displayedImage == null || this.windowImgFocused == null) MessageBox.Show("Can`t call negation sry");
+            if (this.displayedImage == null || this.operations == null) MessageBox.Show("Can`t call negation sry");
             else if (this.displayedImage.NumberOfChannels != 1) MessageBox.Show("Convert to gray");
             else
             {
@@ -164,15 +161,15 @@ namespace APO_Projekt
 
                 }
                 this.displayedImage = grayImg.Mat;
-                this.windowImgFocused.mat = grayImg.Mat;
-                this.windowImgFocused.img.Source = Imaging.CreateBitmapSourceFromHBitmap(grayImg.Mat.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
-                windowImgFocused.Title = "Negation ";
-                this.windowImgFocused.HistogramUpdate();
+                this.operations.mat = grayImg.Mat;
+                this.operations.img.Source = Imaging.CreateBitmapSourceFromHBitmap(grayImg.Mat.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+                operations.Title = "Negation ";
+                this.operations.HistogramUpdate();
             }
         }
         private void Histogram_Click(object sender, RoutedEventArgs e)
         {
-            this.windowImgFocused?.HistogramShow();
+            this.operations?.HistogramShow();
         }
         private void ImageSplitChannels_Click(object sender, RoutedEventArgs e)
         {
@@ -182,13 +179,13 @@ namespace APO_Projekt
                 return;
             }
             VectorOfMat vector = new VectorOfMat();
-            CvInvoke.Split(this.windowImgFocused?.mat, vector);
+            CvInvoke.Split(this.operations?.mat, vector);
             for (int i = 0; i < vector.Size; ++i)
             {
                 Mat vect = vector[i];
                 Mat vectClone = vect.Clone();
                 BitmapSource bitmapSource = Imaging.CreateBitmapSourceFromHBitmap(vectClone.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
-                WindowImgFocused imgWindow = new WindowImgFocused(vectClone, bitmapSource, "Channel " + (i + 1));
+                Operations imgWindow = new Operations(vectClone, bitmapSource, "Channel " + (i + 1));
                 imgWindow.Show();
             }
 
@@ -200,8 +197,8 @@ namespace APO_Projekt
                 MessageBox.Show("Image is grayscale");
                 return;
             }
-            if (this.windowImgFocused?.mat == null) return;
-            Mat initial = this.windowImgFocused.mat;
+            if (this.operations?.mat == null) return;
+            Mat initial = this.operations.mat;
             Mat result = new Mat();
             CvInvoke.CvtColor(initial, result, ColorConversion.Bgr2Hsv);
             VectorOfMat vector = new VectorOfMat();
@@ -214,7 +211,7 @@ namespace APO_Projekt
                 Mat vect = vector[i];
                 Mat vectClone = vect.Clone();
                 BitmapSource bitmapSource = Imaging.CreateBitmapSourceFromHBitmap(vectClone.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
-                WindowImgFocused imgWindow = new WindowImgFocused(vectClone, bitmapSource, "(HSV) " + channelNames[i]);
+                Operations imgWindow = new Operations(vectClone, bitmapSource, "(HSV) " + channelNames[i]);
                 imgWindow.Show();
             }
 
@@ -226,8 +223,8 @@ namespace APO_Projekt
                 MessageBox.Show("Image is grayscale");
                 return;
             }
-            if (this.windowImgFocused?.mat == null) return;
-            Mat initial = this.windowImgFocused.mat;
+            if (this.operations?.mat == null) return;
+            Mat initial = this.operations.mat;
             Mat result = new Mat();
             CvInvoke.CvtColor(initial, result, ColorConversion.Bgr2Lab);
             VectorOfMat vector = new VectorOfMat();
@@ -240,7 +237,7 @@ namespace APO_Projekt
                 Mat vect = vector[i];
                 Mat vectClone = vect.Clone();
                 BitmapSource bitmapSource = Imaging.CreateBitmapSourceFromHBitmap(vectClone.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
-                WindowImgFocused imgWindow = new WindowImgFocused(vectClone, bitmapSource, "(Lab) " + channelNames[i]);
+                Operations imgWindow = new Operations(vectClone, bitmapSource, "(Lab) " + channelNames[i]);
                 imgWindow.Show();
             }
 
@@ -254,8 +251,8 @@ namespace APO_Projekt
                 return;
             }
 
-            this.windowImgFocused?.StretchHistogram(this.displayedImage);
-            this.windowImgFocused?.HistogramUpdate();
+            this.operations?.StretchHistogram(this.displayedImage);
+            this.operations?.HistogramUpdate();
         }
 
         private void StretchContrast_Click(object sender, RoutedEventArgs e)
@@ -275,8 +272,8 @@ namespace APO_Projekt
                     MessageBox.Show("Cannot Stretch Contrast.");
                     return;
                 }
-                this.windowImgFocused?.StretchContrast(p1, p2, q3, q4);
-                this.windowImgFocused?.HistogramUpdate();
+                this.operations?.StretchContrast(p1, p2, q3, q4);
+                this.operations?.HistogramUpdate();
 
             }
         }
@@ -284,11 +281,12 @@ namespace APO_Projekt
         private void Equalize_Click(object sender, RoutedEventArgs e)
         {
             {
-                windowImgFocused?.EqualizeHistogram();
-                windowImgFocused?.HistogramUpdate();
+                operations?.EqualizeHistogram();
+                operations?.HistogramUpdate();
             }
         }
 
+        //  LAB 2
 
         private void Posterize_Click(object sender, RoutedEventArgs e)
         {
@@ -303,14 +301,14 @@ namespace APO_Projekt
                     MessageBox.Show("Cannot perform posterization on a non-grayscale image.");
                     return;
                 }
-                this.windowImgFocused?.Posterize(this.displayedImage, level);
-                this.windowImgFocused?.HistogramUpdate();
+                this.operations?.Posterize(this.displayedImage, level);
+                this.operations?.HistogramUpdate();
             }
         }
 
         private void Blur_Click(object sender, RoutedEventArgs e)
         {
-            if (displayedImage == null || windowImgFocused == null)
+            if (displayedImage == null || operations == null)
             {
                 MessageBox.Show("No image selected.");
                 return;
@@ -323,14 +321,14 @@ namespace APO_Projekt
             CvInvoke.Blur(displayedImage, smoothedMat, kernelSize, point, BorderType.Default);
 
             displayedImage = smoothedMat;
-            windowImgFocused.mat = smoothedMat;
-            windowImgFocused.img.Source = Imaging.CreateBitmapSourceFromHBitmap(smoothedMat.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
-            windowImgFocused?.HistogramUpdate();
+            operations.mat = smoothedMat;
+            operations.img.Source = Imaging.CreateBitmapSourceFromHBitmap(smoothedMat.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+            operations?.HistogramUpdate();
         }
 
         private void GaussianBlur_Click(object sender, RoutedEventArgs e)
         {
-            if (displayedImage == null || windowImgFocused == null)
+            if (displayedImage == null || operations == null)
             {
                 MessageBox.Show("No image selected.");
                 return;
@@ -341,14 +339,14 @@ namespace APO_Projekt
 
             CvInvoke.GaussianBlur(displayedImage, smoothedMat, kernelSize, 0);
             displayedImage = smoothedMat;
-            windowImgFocused.mat = smoothedMat;
-            windowImgFocused.img.Source = Imaging.CreateBitmapSourceFromHBitmap(smoothedMat.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
-            windowImgFocused?.HistogramUpdate();
+            operations.mat = smoothedMat;
+            operations.img.Source = Imaging.CreateBitmapSourceFromHBitmap(smoothedMat.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+            operations?.HistogramUpdate();
         }
 
         private void SobelEdgeDetection_Click(object sender, RoutedEventArgs e)
         {
-            if (displayedImage == null || windowImgFocused == null)
+            if (displayedImage == null || operations == null)
             {
                 MessageBox.Show("No image selected.");
                 return;
@@ -360,15 +358,15 @@ namespace APO_Projekt
             CvInvoke.BitwiseNot(edgesMat, edgesMat);
 
             displayedImage = edgesMat;
-            windowImgFocused.mat = edgesMat;
-            windowImgFocused.img.Source = Imaging.CreateBitmapSourceFromHBitmap(edgesMat.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
-            windowImgFocused.Title = "(Sobel) " + selectedBorderType;
-            windowImgFocused?.HistogramUpdate();
+            operations.mat = edgesMat;
+            operations.img.Source = Imaging.CreateBitmapSourceFromHBitmap(edgesMat.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+            operations.Title = "(Sobel) " + selectedBorderType;
+            operations?.HistogramUpdate();
         }
 
         private void LaplacianEdgeDetection_Click(object sender, RoutedEventArgs e)
         {
-            if (displayedImage == null || windowImgFocused == null)
+            if (displayedImage == null || operations == null)
             {
                 MessageBox.Show("No image selected.");
                 return;
@@ -382,15 +380,15 @@ namespace APO_Projekt
             //CvInvoke.Threshold(edgesMat, edgesMat, 50, 255, ThresholdType.Binary);
 
             displayedImage = edgesMat;
-            windowImgFocused.mat = edgesMat;
-            windowImgFocused.img.Source = Imaging.CreateBitmapSourceFromHBitmap(edgesMat.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
-            windowImgFocused.Title = "(Laplacian) " + selectedBorderType;
-            windowImgFocused?.HistogramUpdate();
+            operations.mat = edgesMat;
+            operations.img.Source = Imaging.CreateBitmapSourceFromHBitmap(edgesMat.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+            operations.Title = "(Laplacian) " + selectedBorderType;
+            operations?.HistogramUpdate();
         }
 
         private void CannyEdgeDetection_Click(object sender, RoutedEventArgs e)
         {
-            if (displayedImage == null || windowImgFocused == null)
+            if (displayedImage == null || operations == null)
             {
                 MessageBox.Show("No image selected.");
                 return;
@@ -402,10 +400,10 @@ namespace APO_Projekt
             CvInvoke.BitwiseNot(edgesMat, edgesMat);
 
             displayedImage = edgesMat;
-            windowImgFocused.mat = edgesMat;
-            windowImgFocused.img.Source = Imaging.CreateBitmapSourceFromHBitmap(edgesMat.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
-            windowImgFocused.Title = "(Canny) " + selectedBorderType;
-            windowImgFocused?.HistogramUpdate();
+            operations.mat = edgesMat;
+            operations.img.Source = Imaging.CreateBitmapSourceFromHBitmap(edgesMat.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+            operations.Title = "(Canny) " + selectedBorderType;
+            operations?.HistogramUpdate();
         }
 
         private void LinearLaplacianSharpening1_Click(object sender, RoutedEventArgs e)
@@ -515,7 +513,7 @@ namespace APO_Projekt
         private void ApplyLinearSharpening(float[,] mask, string title)
         {
 
-            if (displayedImage == null || windowImgFocused == null)
+            if (displayedImage == null || operations == null)
             {
                 MessageBox.Show("No image selected.");
                 return;
@@ -526,13 +524,13 @@ namespace APO_Projekt
                 MessageBox.Show("Invalid mask size. Must be 3x3.");
                 return;
             }
-            windowImgFocused?.ApplyLinearSharpening(mask, selectedBorderType, title);
+            operations?.ApplyLinearSharpening(mask, selectedBorderType, title);
 
            
         }
         private void CustomLinearOperation_Click(object sender, RoutedEventArgs e)
         {
-            if (this.displayedImage == null || windowImgFocused == null)
+            if (this.displayedImage == null || operations == null)
             {
                 MessageBox.Show("No image selected.");
                 return;
@@ -555,7 +553,7 @@ namespace APO_Projekt
                  {m4, m5, m6 },
                  {m7, m8, m9 }
              };
-                 windowImgFocused?.ApplyLinearSharpening(customMast,selectedBorderType, "Custom Linear Operation");
+                 operations?.ApplyLinearSharpening(customMast,selectedBorderType, "Custom Linear Operation");
 
 
          /*   Mat kernel = new Mat(3, 3, DepthType.Cv32F, 1);
@@ -581,7 +579,7 @@ namespace APO_Projekt
 
         private void MedianFiltration_Click(object sender, EventArgs e)
         {
-            if (this.displayedImage == null || windowImgFocused == null)
+            if (this.displayedImage == null || operations == null)
             {
                 MessageBox.Show("No image selected.");
                 return;
@@ -605,10 +603,10 @@ namespace APO_Projekt
                 CvInvoke.MedianBlur(displayedImage, sharpenedMat, kernelSize);
 
                 displayedImage = sharpenedMat;
-                windowImgFocused.mat = sharpenedMat;
-                windowImgFocused.img.Source = Imaging.CreateBitmapSourceFromHBitmap(sharpenedMat.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
-                windowImgFocused.Title = "Median Filtration";
-                windowImgFocused?.HistogramUpdate();
+                operations.mat = sharpenedMat;
+                operations.img.Source = Imaging.CreateBitmapSourceFromHBitmap(sharpenedMat.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+                operations.Title = "Median Filtration";
+                operations?.HistogramUpdate();
 
 
             }
@@ -617,155 +615,38 @@ namespace APO_Projekt
         private void LinearFiltering_Click(object sender, RoutedEventArgs e)
         {
 
-            if (this.displayedImage == null || windowImgFocused == null)
+            if (this.displayedImage == null || operations == null)
             {
                 MessageBox.Show("No image selected.");
                 return;
             }
 
-            Mask3x3 maskSmooth = new Mask3x3();
-            if (maskSmooth.ShowDialog() == true)
-            {
-                int m1 = maskSmooth.M1;
-                int m2 = maskSmooth.M2;
-                int m3 = maskSmooth.M3;
-                int m4 = maskSmooth.M4;
-                int m5 = maskSmooth.M5;
-                int m6 = maskSmooth.M6;
-                int m7 = maskSmooth.M7;
-                int m8 = maskSmooth.M8;
-                int m9 = maskSmooth.M9;
-
-
-                Mask3x3 maskSharp = new Mask3x3();
-                if (maskSharp.ShowDialog() == true)
-                {
-
-                    int m1sharp = maskSharp.M1;
-                    int m2sharp = maskSharp.M2;
-                    int m3sharp = maskSharp.M3;
-                    int m4sharp = maskSharp.M4;
-                    int m5sharp = maskSharp.M5;
-                    int m6sharp = maskSharp.M6;
-                    int m7sharp = maskSharp.M7;
-                    int m8sharp = maskSharp.M8;
-                    int m9sharp = maskSharp.M9;
-                    double[,] kernel1 = new double[,] { { m1, m2, m3 }, { m4, m5, m6 }, { m7, m8, m9 } };
-                    double[,] kernel2 = new double[,] { { m1sharp, m2sharp, m3sharp }, { m4sharp, m5sharp, m6sharp }, { m7sharp, m8sharp, m9sharp } };
-
-                    Mat kernelSmooth = new Mat(3, 3, DepthType.Cv32F, 1);
-                    double[] smoothedKernelData = new double[] { m1, m2, m3, m4, m5, m6, m7, m8, m9 };
-                    kernelSmooth.SetTo(smoothedKernelData);
-
-                    Mat kernelSharp = new Mat(3, 3, DepthType.Cv32F, 1);
-                    double[] sharpedKernelData = new double[] { m1sharp, m2sharp, m3sharp, m4sharp, m5sharp, m6sharp, m7sharp, m8sharp, m9sharp };
-                    kernelSharp.SetTo(sharpedKernelData);
-
-                    // Wygładzanie
-                    Mat smoothedMat = displayedImage.Clone();
-                    CvInvoke.Filter2D(displayedImage, smoothedMat, kernelSmooth, new System.Drawing.Point(-1, -1), 0, selectedBorderType);
-
-                    // Wyostrzanie
-                    Mat sharpenedMat = displayedImage.Clone();
-                    CvInvoke.Filter2D(smoothedMat, sharpenedMat, kernelSharp, new System.Drawing.Point(-1, -1), 0, selectedBorderType);
-
-
-                    Mat result5x5 = displayedImage.Clone();
-
-                    double[,] result = Convolve(kernel1, kernel2);
-
-                    double[] kernelData = new double[5 * 5];
-                    int index = 0;
-
-                    for (int i = 0; i < 5; i++)
-                    {
-                        for (int j = 0; j < 5; j++)
-                        {
-                            kernelData[index++] = result[i, j];
-                        }
-                    }
-
-
-                    Mat kernelMat = new Mat(5, 5, DepthType.Cv32F, 1);
-                    kernelMat.SetTo(kernelData);
-
-                    CvInvoke.Filter2D(displayedImage, result5x5, kernelMat, new System.Drawing.Point(-1, -1), 0, selectedBorderType);
-
-
-                    displayedImage = sharpenedMat;
-                    windowImgFocused.mat = sharpenedMat;
-                    windowImgFocused.img.Source = Imaging.CreateBitmapSourceFromHBitmap(sharpenedMat.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
-                    windowImgFocused.Title = "3x3 masks operation";
-                    windowImgFocused?.HistogramUpdate();
-
-                    BitmapSource bitmapSource = Imaging.CreateBitmapSourceFromHBitmap(result5x5.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
-                    WindowImgFocused imgWindow = new WindowImgFocused(result5x5, bitmapSource, "5x5 mask operation");
-                    imgWindow.Show();
-
-                }
-            }
+            operations.LinearFiltering(selectedBorderType);
         }
 
         private void PointOperation_Click(object sender, RoutedEventArgs e)
         {
 
 
-            if (this.displayedImage == null || windowImgFocused == null)
+            if (this.displayedImage == null || operations == null)
             {
                 MessageBox.Show("No image selected.");
                 return;
             }
 
-            OperationSelector operation = new OperationSelector(imagesList);
-
-            if (operation.ShowDialog() == true)
-            {
-                WindowImgFocused firstImage = imagesList[operation.FirstImgIndex];
-                WindowImgFocused secondImage = imagesList[operation.SecondImgIndex];
-
-                Mat resultImage = new Mat();
-                string selectedOperation = operation.Operation;
-                double blend = operation.Blend;
-                if (firstImage.mat?.Size != secondImage.mat?.Size)
-                {
-                    MessageBox.Show("Images must have the same size for this operation.");
-                    return;
-                }
-
-                switch (selectedOperation)
-                {
-                    case "Add":
-                        CvInvoke.Add(firstImage.mat, secondImage.mat, resultImage);
-                        break;
-                    case "Substract":
-                        CvInvoke.Subtract(firstImage.mat, secondImage.mat, resultImage);
-                        break;
-                    case "Blend":
-                        CvInvoke.AddWeighted(firstImage.mat, blend, secondImage.mat, 1 - blend, 0, resultImage);
-                        break;
-                    case "AND":
-                        CvInvoke.BitwiseAnd(firstImage.mat, secondImage.mat, resultImage);
-                        break;
-                    case "OR":
-                        CvInvoke.BitwiseOr(firstImage.mat, secondImage.mat, resultImage);
-                        break;
-                    case "NOT":
-                        CvInvoke.BitwiseNot(firstImage.mat, resultImage);
-                        break;
-                    case "XOR":
-                        CvInvoke.BitwiseXor(firstImage.mat, secondImage.mat, resultImage);
-                        break;
-                    default:
-                        break;
-                }
-
-                BitmapSource bitmapSource = Imaging.CreateBitmapSourceFromHBitmap(resultImage.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
-                WindowImgFocused imgWindow = new WindowImgFocused(resultImage, bitmapSource, selectedOperation);
-                imgWindow.Show();
-                imagesList.Add(imgWindow);
-            }
+            operations.PointOperations(imagesList);
         }
 
+        //  LAB 3
+        private void Morphology_Click(object sender, EventArgs e)
+        {
+            if (this.displayedImage == null || operations == null)
+            {
+                MessageBox.Show("No image selected.");
+                return;
+            }
+            operations.Morphology(selectedBorderType);
+        }
     }
 }
 

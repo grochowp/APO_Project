@@ -57,7 +57,6 @@ C:\Users\Patryk\Desktop\c#\APO_Projekt\obj\Debug\net7.0-windows7.0\APO_Projekt.c
 C:\Users\Patryk\Desktop\c#\APO_Projekt\obj\Debug\net7.0-windows7.0\Features\Canals.g.cs
 C:\Users\Patryk\Desktop\c#\APO_Projekt\obj\Debug\net7.0-windows7.0\Features\Histogram.g.cs
 C:\Users\Patryk\Desktop\c#\APO_Projekt\obj\Debug\net7.0-windows7.0\Features\StretchData.g.cs
-C:\Users\Patryk\Desktop\c#\APO_Projekt\obj\Debug\net7.0-windows7.0\Focused window\WindowImgFocused.g.cs
 C:\Users\Patryk\Desktop\c#\APO_Projekt\obj\Debug\net7.0-windows7.0\MainWindow.g.cs
 C:\Users\Patryk\Desktop\c#\APO_Projekt\obj\Debug\net7.0-windows7.0\App.g.cs
 C:\Users\Patryk\Desktop\c#\APO_Projekt\obj\Debug\net7.0-windows7.0\APO_Projekt_MarkupCompile.cache
@@ -65,7 +64,6 @@ C:\Users\Patryk\Desktop\c#\APO_Projekt\obj\Debug\net7.0-windows7.0\APO_Projekt_M
 C:\Users\Patryk\Desktop\c#\APO_Projekt\obj\Debug\net7.0-windows7.0\Features\Canals.baml
 C:\Users\Patryk\Desktop\c#\APO_Projekt\obj\Debug\net7.0-windows7.0\Features\Histogram.baml
 C:\Users\Patryk\Desktop\c#\APO_Projekt\obj\Debug\net7.0-windows7.0\Features\StretchData.baml
-C:\Users\Patryk\Desktop\c#\APO_Projekt\obj\Debug\net7.0-windows7.0\Focused window\WindowImgFocused.baml
 C:\Users\Patryk\Desktop\c#\APO_Projekt\obj\Debug\net7.0-windows7.0\MainWindow.baml
 C:\Users\Patryk\Desktop\c#\APO_Projekt\obj\Debug\net7.0-windows7.0\APO_Projekt.g.resources
 C:\Users\Patryk\Desktop\c#\APO_Projekt\obj\Debug\net7.0-windows7.0\APO_Projekt.GeneratedMSBuildEditorConfig.editorconfig
@@ -84,3 +82,7 @@ C:\Users\Patryk\Desktop\c#\APO_Projekt\obj\Debug\net7.0-windows7.0\Features\Medi
 C:\Users\Patryk\Desktop\c#\APO_Projekt\obj\Debug\net7.0-windows7.0\Features\MedianFiltration.baml
 C:\Users\Patryk\Desktop\c#\APO_Projekt\obj\Debug\net7.0-windows7.0\Features\OperationSelector.g.cs
 C:\Users\Patryk\Desktop\c#\APO_Projekt\obj\Debug\net7.0-windows7.0\Features\OperationSelector.baml
+C:\Users\Patryk\Desktop\c#\APO_Projekt\obj\Debug\net7.0-windows7.0\Features\Morphology.g.cs
+C:\Users\Patryk\Desktop\c#\APO_Projekt\obj\Debug\net7.0-windows7.0\Focused window\Operations.g.cs
+C:\Users\Patryk\Desktop\c#\APO_Projekt\obj\Debug\net7.0-windows7.0\Features\Morphology.baml
+C:\Users\Patryk\Desktop\c#\APO_Projekt\obj\Debug\net7.0-windows7.0\Focused window\Operations.baml
