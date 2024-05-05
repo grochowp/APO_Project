@@ -384,12 +384,12 @@ namespace APO_Projekt
                 switch (element)
                 {
                     case "Diamond":
-                        if(size == 3)
+                        if (size == 3)
                         {
                             diamond = new byte[] { 0, 1, 0, 1, 1, 1, 0, 1, 0 };
-                            
+
                         }
-                        else if(size == 5)
+                        else if (size == 5)
                         {
                             diamond = new byte[] { 0, 0, 1, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 1, 0, 0 };
                         }
@@ -404,7 +404,7 @@ namespace APO_Projekt
                         tempMat = CvInvoke.GetStructuringElement(ElementShape.Rectangle, new System.Drawing.Size(size, size), new System.Drawing.Point(-1, -1));
                         break;
 
-                    default: 
+                    default:
                         break;
                 }
             }
@@ -429,7 +429,7 @@ namespace APO_Projekt
                         CvInvoke.Dilate(grayImage, resultImage, MorphologyHelper(morphology.Size, morphology.Element), new System.Drawing.Point(-1, -1), 1, selectedBorderType, new MCvScalar(0));
                         break;
                     case "Open":
-                        CvInvoke.MorphologyEx(grayImage, resultImage,MorphOp.Open, MorphologyHelper(morphology.Size, morphology.Element), new System.Drawing.Point(-1, -1), 1, selectedBorderType, new MCvScalar(0));
+                        CvInvoke.MorphologyEx(grayImage, resultImage, MorphOp.Open, MorphologyHelper(morphology.Size, morphology.Element), new System.Drawing.Point(-1, -1), 1, selectedBorderType, new MCvScalar(0));
                         break;
                     case "Close":
                         CvInvoke.MorphologyEx(grayImage, resultImage, MorphOp.Close, MorphologyHelper(morphology.Size, morphology.Element), new System.Drawing.Point(-1, -1), 1, selectedBorderType, new MCvScalar(0));
@@ -443,6 +443,102 @@ namespace APO_Projekt
                 this.Title = "Mono (" + morphology.Operation + ") (" + morphology.Size + "x" + morphology.Size + ") (" + morphology.Element + ")";
                 this?.HistogramUpdate();
             }
+        }
+
+        public void Pyramid(string method)
+        {
+            Mat pyrImg = this.mat.Clone();
+            Image<Gray, byte> grayImage = pyrImg.ToImage<Gray, byte>();
+
+            Mat scaledMat = new Mat();
+           
+            if (method == "Upscale")
+            {
+                CvInvoke.PyrUp(grayImage, scaledMat);
+
+            }
+            else if (method == "Downscale")
+            {
+                CvInvoke.PyrDown(grayImage, scaledMat);
+            }
+
+            this.mat = scaledMat;
+            this.img.Source = Imaging.CreateBitmapSourceFromHBitmap(scaledMat.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+            this.Title = $"Pyramid {method}";
+            this?.HistogramUpdate();
+        }
+
+        public void Skeletonize()
+        {
+            int size = this.mat.Width * this.mat.Height;
+
+            Mat skel = new Mat(this.mat.Size, DepthType.Cv8U, 1);
+            Mat copy = this.mat.Clone();    
+            Mat element = CvInvoke.GetStructuringElement(ElementShape.Cross, new System.Drawing.Size(3, 3), new System.Drawing.Point(-1, -1));
+
+            while (true)
+            {
+                Mat open = new Mat();
+                CvInvoke.MorphologyEx(copy, open, MorphOp.Open, element,new System.Drawing.Point(-1, -1), 1, BorderType.Default, new MCvScalar(0));
+
+                Mat temp = new Mat();
+                CvInvoke.Subtract(copy, open, temp);
+
+                Mat erode = new Mat();
+                CvInvoke.Erode(copy,erode,element, new System.Drawing.Point(-1,-1), 1, BorderType.Default, new MCvScalar(0));
+
+                CvInvoke.BitwiseOr(skel, temp, skel);
+
+                copy = erode.Clone();
+
+                if (CvInvoke.CountNonZero(copy) == 0)
+                    break;
+            }
+
+            this.mat = skel;
+            this.img.Source = Imaging.CreateBitmapSourceFromHBitmap(skel.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+            this.Title = "Skeletonized";
+            this?.HistogramUpdate();
+
+        }
+
+        public void Hough()
+        {
+            try
+            {
+            Mat image = this.mat.Clone();
+            Image<Gray, byte> gray = image.ToImage<Gray, byte>();
+
+            Mat edges = new Mat();
+            CvInvoke.Canny(gray, edges, 50, 150);
+
+            LineSegment2D[] lines = CvInvoke.HoughLinesP(
+                edges,
+                1, 
+                Math.PI / 180,
+                100,
+                50,
+                10 
+            );
+
+            foreach (LineSegment2D line in lines)
+            {
+                CvInvoke.Line(gray.Mat, line.P1, line.P2, new MCvScalar(0, 0, 255), 2);
+            }
+
+            this.mat = gray.Mat;
+            this.img.Source = Imaging.CreateBitmapSourceFromHBitmap(gray.Mat.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+            this.Title = "Hough";
+            this?.HistogramUpdate();
+            }catch(Exception ex)
+            {
+                MessageBox.Show("Wystąpił błąd: " + ex.Message);
+            }
+        }
+
+        public void ProfileLine()
+        {
+
         }
     }
 }

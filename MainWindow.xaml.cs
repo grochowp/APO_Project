@@ -14,6 +14,7 @@ using System.Windows.Controls;
 using System.Drawing;
 using static SkiaSharp.HarfBuzz.SKShaper;
 using System.Security.Policy;
+using System.Drawing.Imaging;
 
 namespace APO_Projekt
 {
@@ -78,6 +79,46 @@ namespace APO_Projekt
             MenuItem_Reflect.IsChecked = true;
         }
 
+        private void SaveImage_Click(object sender, RoutedEventArgs e)
+        {
+            if (displayedImage == null || operations == null)
+            {
+                MessageBox.Show("No image selected.");
+                return;
+            }
+
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = "Bitmap Image|*.bmp|JPEG Image|*.jpg;*.jpeg|PNG Image|*.png";
+            saveFileDialog.Title = "Save an Image File";
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                string fileName = saveFileDialog.FileName;
+
+                // Zapisanie obrazu w wybranym formacie
+                switch (saveFileDialog.FilterIndex)
+                {
+                    case 1: // BMP
+                        CvInvoke.Imwrite(fileName, displayedImage);
+                        break;
+                    case 2: // JPEG
+                        using (Image<Bgr, byte> image = displayedImage.ToImage<Bgr, byte>())
+                        {
+                            Bitmap bitmap = image.ToBitmap();
+                            bitmap.Save(fileName, ImageFormat.Jpeg);
+                        }
+                        break;
+                    case 3: // PNG
+                        using (Image<Bgr, byte> image = displayedImage.ToImage<Bgr, byte>())
+                        {
+                            Bitmap bitmap = image.ToBitmap();
+                            bitmap.Save(fileName, ImageFormat.Png);
+                        }
+                        break;
+                }
+            }
+        }
+
+
         //  LAB 1
 
         private void UpdateFocus(Mat mat, Operations windowImg)
@@ -126,8 +167,8 @@ namespace APO_Projekt
         }
         private void ColorToGray_Click(object sender, RoutedEventArgs e)
         {
-            if (this.displayedImage == null || this.operations == null) MessageBox.Show("no obrazek?");
-            else if (this.displayedImage.NumberOfChannels == 1) MessageBox.Show("?");
+            if (this.displayedImage == null || this.operations == null) MessageBox.Show("No image selected.");
+            else if (this.displayedImage.NumberOfChannels == 1) MessageBox.Show("Image can`t be grayscale.");
             else
             {
                 Mat mat = new Mat();
@@ -646,6 +687,62 @@ namespace APO_Projekt
                 return;
             }
             operations.Morphology(selectedBorderType);
+        }
+
+        private void PyramidUpscale_Click(object sender, EventArgs e)
+        {
+            if (this.displayedImage == null || operations == null)
+            {
+                MessageBox.Show("No image selected.");
+                return;
+            }
+            operations.Pyramid("Upscale");
+        }
+
+        private void PyramidDownscale_Click(object sender, EventArgs e)
+        {
+            if (this.displayedImage == null || operations == null)
+            {
+                MessageBox.Show("No image selected.");
+                return;
+            }
+            operations.Pyramid("Downscale");
+        }
+
+        private void Skeletonize_Click(object sender, EventArgs e)
+        {
+            if (this.displayedImage == null || operations == null)
+            {
+                MessageBox.Show("No image selected.");
+                return;
+            }
+            else if (this.displayedImage.NumberOfChannels != 1)
+            {
+                MessageBox.Show("Image need to be grayscale.");
+
+                return;
+            }
+                operations.Skeletonize();
+        }
+
+        private void Hough_Click(object sender, EventArgs e)
+        {
+            if (this.displayedImage == null || operations == null)
+            {
+                MessageBox.Show("No image selected.");
+                return;
+            }
+            operations.Hough();
+        }
+
+        private void ProfileLine_Click(object sender, EventArgs e)
+        {
+            if (this.displayedImage == null || operations == null)
+            {
+                MessageBox.Show("No image selected.");
+                return;
+            }
+             operations.ProfileLine();
         }
     }
 }
