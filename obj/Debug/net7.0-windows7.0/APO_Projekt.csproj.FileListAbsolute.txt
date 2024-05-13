@@ -86,3 +86,7 @@ C:\Users\Patryk\Desktop\c#\APO_Projekt\obj\Debug\net7.0-windows7.0\Features\Morp
 C:\Users\Patryk\Desktop\c#\APO_Projekt\obj\Debug\net7.0-windows7.0\Focused window\Operations.g.cs
 C:\Users\Patryk\Desktop\c#\APO_Projekt\obj\Debug\net7.0-windows7.0\Features\Morphology.baml
 C:\Users\Patryk\Desktop\c#\APO_Projekt\obj\Debug\net7.0-windows7.0\Focused window\Operations.baml
+C:\Users\Patryk\Desktop\c#\APO_Projekt\obj\Debug\net7.0-windows7.0\Features\Inpaint.g.cs
+C:\Users\Patryk\Desktop\c#\APO_Projekt\obj\Debug\net7.0-windows7.0\Features\Inpaint.baml
+C:\Users\Patryk\Desktop\c#\APO_Projekt\obj\Debug\net7.0-windows7.0\Features\AboutProgram.g.cs
+C:\Users\Patryk\Desktop\c#\APO_Projekt\obj\Debug\net7.0-windows7.0\Features\AboutProgram.baml

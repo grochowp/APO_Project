@@ -7,10 +7,16 @@
     </ApplicationDefinition>
   </ItemGroup>
   <ItemGroup>
+    <Compile Update="Features\AboutProgram.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Features\Canals.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Features\Histogram.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Features\Inpaint.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Features\Mask3x3.xaml.cs">
@@ -33,10 +39,16 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Page Update="Features\AboutProgram.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Update="Features\Canals.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Features\Histogram.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Features\Inpaint.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Features\Mask3x3.xaml">

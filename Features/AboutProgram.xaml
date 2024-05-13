@@ -1,0 +1,15 @@
+﻿<Window x:Class="APO_Projekt.Features.AboutProgram"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:APO_Projekt.Features"
+        mc:Ignorable="d"
+       Title="InformationWindow" Height="200" Width="300">
+    <Grid>
+        <Label Content="Autor: Patryk Grochowski" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
+        <Label Content="Prowadzący: dr inż. Łukasz Roszkowiak" HorizontalAlignment="Left" Margin="10,40,0,0" VerticalAlignment="Top"/>
+        <Label Content="Algorytmy Przetwarzania Obrazów 2024" HorizontalAlignment="Left" Margin="10,70,0,0" VerticalAlignment="Top"/>
+        <Label Content="WIT Grupa ID: ID06IO01" HorizontalAlignment="Left" Margin="10,100,0,0" VerticalAlignment="Top"/>
+    </Grid>
+</Window>

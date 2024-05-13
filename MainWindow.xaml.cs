@@ -38,8 +38,12 @@ namespace APO_Projekt
             Operations.windowImgClosed += ClearFocus;
         }
 
-        
 
+        private void AboutInfo_Click(object sender, RoutedEventArgs e)
+        {
+            AboutProgram ap = new AboutProgram();
+            ap.Show();
+        }
         private void BorderType_Default_Click(object sender, RoutedEventArgs e)
         {
             selectedBorderType = BorderType.Default;
@@ -144,9 +148,9 @@ namespace APO_Projekt
                 string fileName = Image.FileName;
                 Mat ImageOpened = CvInvoke.Imread(fileName, ImreadModes.Grayscale);
                 BitmapSource bitmapSource = Imaging.CreateBitmapSourceFromHBitmap(ImageOpened.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
-                Operations imgWindow = new Operations(ImageOpened, bitmapSource, "Mono " + fileName);
-                imgWindow.Show();
-                imagesList.Add(imgWindow);
+                Operations image = new Operations(ImageOpened, bitmapSource, "Mono " + fileName);
+                image.Show();
+                imagesList.Add(image);
             }
         }
         private void ImportColor_Click(object sender, RoutedEventArgs e)
@@ -163,6 +167,7 @@ namespace APO_Projekt
                 BitmapSource bitmapSource = Imaging.CreateBitmapSourceFromHBitmap(ImageOpened.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
                 Operations image = new Operations(ImageOpened, bitmapSource, "Color " + fileName);
                 image.Show();
+                imagesList.Add(image);
             }
         }
         private void ColorToGray_Click(object sender, RoutedEventArgs e)
@@ -567,7 +572,7 @@ namespace APO_Projekt
             }
             operations?.ApplyLinearSharpening(mask, selectedBorderType, title);
 
-           
+
         }
         private void CustomLinearOperation_Click(object sender, RoutedEventArgs e)
         {
@@ -589,32 +594,32 @@ namespace APO_Projekt
                 int m8 = mask.M8;
                 int m9 = mask.M9;
 
-                 float[,] customMast = {
+                float[,] customMast = {
                  { m1, m2, m3 },
                  {m4, m5, m6 },
                  {m7, m8, m9 }
              };
-                 operations?.ApplyLinearSharpening(customMast,selectedBorderType, "Custom Linear Operation");
+                operations?.ApplyLinearSharpening(customMast, selectedBorderType, "Custom Linear Operation");
 
 
-         /*   Mat kernel = new Mat(3, 3, DepthType.Cv32F, 1);
-                float[] kernelData = new float[] { m1, m2, m3, m4, m5, m6, m7, m8, m9 };
-                kernel.SetTo(kernelData);
+                /*   Mat kernel = new Mat(3, 3, DepthType.Cv32F, 1);
+                       float[] kernelData = new float[] { m1, m2, m3, m4, m5, m6, m7, m8, m9 };
+                       kernel.SetTo(kernelData);
 
-                System.Drawing.Point point = new System.Drawing.Point(-1, -1);
-                Mat sharpenedMat = new Mat();
-                if (displayedImage.Size != sharpenedMat.Size)
-                {
-                    sharpenedMat = displayedImage.Clone();
-                }
-                CvInvoke.Filter2D(displayedImage, sharpenedMat, kernel, point, 0, selectedBorderType);
+                       System.Drawing.Point point = new System.Drawing.Point(-1, -1);
+                       Mat sharpenedMat = new Mat();
+                       if (displayedImage.Size != sharpenedMat.Size)
+                       {
+                           sharpenedMat = displayedImage.Clone();
+                       }
+                       CvInvoke.Filter2D(displayedImage, sharpenedMat, kernel, point, 0, selectedBorderType);
 
-                displayedImage = sharpenedMat;
-                windowImgFocused.mat = sharpenedMat;
-                windowImgFocused.img.Source = Imaging.CreateBitmapSourceFromHBitmap(sharpenedMat.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
-                windowImgFocused.Title = "Custom Linear Operation";
-                windowImgFocused?.HistogramUpdate();
-         */
+                       displayedImage = sharpenedMat;
+                       windowImgFocused.mat = sharpenedMat;
+                       windowImgFocused.img.Source = Imaging.CreateBitmapSourceFromHBitmap(sharpenedMat.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+                       windowImgFocused.Title = "Custom Linear Operation";
+                       windowImgFocused?.HistogramUpdate();
+                */
             }
         }
 
@@ -722,7 +727,7 @@ namespace APO_Projekt
 
                 return;
             }
-                operations.Skeletonize();
+            operations.Skeletonize();
         }
 
         private void Hough_Click(object sender, EventArgs e)
@@ -742,8 +747,45 @@ namespace APO_Projekt
                 MessageBox.Show("No image selected.");
                 return;
             }
-             operations.ProfileLine();
+            operations.ProfileLine();
         }
+
+
+        //  LAB 4
+
+        private void GrabCut_Click(object sender, EventArgs e)
+        {
+            if (this.displayedImage == null || this.operations == null)
+            {
+                MessageBox.Show("No image selected.");
+                return;
+            }
+
+            operations.GrabCut();
+        }
+
+        private void Watershed_Click(object sender, EventArgs e)
+        {
+            if (this.displayedImage == null || this.operations == null)
+            {
+                MessageBox.Show("No image selected.");
+                return;
+            }
+
+            operations.Watershed();
+        }
+
+        private void Inpaint_Click(object sender, EventArgs e)
+        {
+            if (this.displayedImage == null || this.operations == null)
+            {
+                MessageBox.Show("No image selected.");
+                return;
+            }
+
+            operations.Inpaint(imagesList);
+        }
+
     }
 }
 

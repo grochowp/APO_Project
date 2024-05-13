@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
@@ -8,6 +9,8 @@ using APO_Projekt.Features;
 using Emgu.CV;
 using Emgu.CV.CvEnum;
 using Emgu.CV.Structure;
+using Emgu.CV.Util;
+using SkiaSharp;
 
 namespace APO_Projekt
 {
@@ -451,7 +454,7 @@ namespace APO_Projekt
             Image<Gray, byte> grayImage = pyrImg.ToImage<Gray, byte>();
 
             Mat scaledMat = new Mat();
-           
+
             if (method == "Upscale")
             {
                 CvInvoke.PyrUp(grayImage, scaledMat);
@@ -473,19 +476,19 @@ namespace APO_Projekt
             int size = this.mat.Width * this.mat.Height;
 
             Mat skel = new Mat(this.mat.Size, DepthType.Cv8U, 1);
-            Mat copy = this.mat.Clone();    
+            Mat copy = this.mat.Clone();
             Mat element = CvInvoke.GetStructuringElement(ElementShape.Cross, new System.Drawing.Size(3, 3), new System.Drawing.Point(-1, -1));
 
             while (true)
             {
                 Mat open = new Mat();
-                CvInvoke.MorphologyEx(copy, open, MorphOp.Open, element,new System.Drawing.Point(-1, -1), 1, BorderType.Default, new MCvScalar(0));
+                CvInvoke.MorphologyEx(copy, open, MorphOp.Open, element, new System.Drawing.Point(-1, -1), 1, BorderType.Default, new MCvScalar(0));
 
                 Mat temp = new Mat();
                 CvInvoke.Subtract(copy, open, temp);
 
                 Mat erode = new Mat();
-                CvInvoke.Erode(copy,erode,element, new System.Drawing.Point(-1,-1), 1, BorderType.Default, new MCvScalar(0));
+                CvInvoke.Erode(copy, erode, element, new System.Drawing.Point(-1, -1), 1, BorderType.Default, new MCvScalar(0));
 
                 CvInvoke.BitwiseOr(skel, temp, skel);
 
@@ -506,31 +509,32 @@ namespace APO_Projekt
         {
             try
             {
-            Mat image = this.mat.Clone();
-            Image<Gray, byte> gray = image.ToImage<Gray, byte>();
+                Mat image = this.mat.Clone();
+                Image<Gray, byte> gray = image.ToImage<Gray, byte>();
 
-            Mat edges = new Mat();
-            CvInvoke.Canny(gray, edges, 50, 150);
+                Mat edges = new Mat();
+                CvInvoke.Canny(gray, edges, 50, 150);
 
-            LineSegment2D[] lines = CvInvoke.HoughLinesP(
-                edges,
-                1, 
-                Math.PI / 180,
-                100,
-                50,
-                10 
-            );
+                LineSegment2D[] lines = CvInvoke.HoughLinesP(
+                    edges,
+                    1,
+                    Math.PI / 180,
+                    100,
+                    50,
+                    10
+                );
 
-            foreach (LineSegment2D line in lines)
-            {
-                CvInvoke.Line(gray.Mat, line.P1, line.P2, new MCvScalar(0, 0, 255), 2);
+                foreach (LineSegment2D line in lines)
+                {
+                    CvInvoke.Line(gray.Mat, line.P1, line.P2, new MCvScalar(0, 0, 255), 2);
+                }
+
+                this.mat = gray.Mat;
+                this.img.Source = Imaging.CreateBitmapSourceFromHBitmap(gray.Mat.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+                this.Title = "Hough";
+                this?.HistogramUpdate();
             }
-
-            this.mat = gray.Mat;
-            this.img.Source = Imaging.CreateBitmapSourceFromHBitmap(gray.Mat.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
-            this.Title = "Hough";
-            this?.HistogramUpdate();
-            }catch(Exception ex)
+            catch (Exception ex)
             {
                 MessageBox.Show("Wystąpił błąd: " + ex.Message);
             }
@@ -540,6 +544,122 @@ namespace APO_Projekt
         {
 
         }
+        public void GrabCut()
+        {
+            try
+            {
+                if (this.mat == null)
+                {
+                    MessageBox.Show("No image loaded.");
+                    return;
+                }
+
+                Mat mask = new Mat(this.mat.Size, DepthType.Cv8U, 1);
+                mask.SetTo(new MCvScalar(2)); // Ustaw obszar do segmentacji jako nieokreślony
+
+                // Definiuj prostokąt obszaru inicjalizacji
+                Rectangle rect = new Rectangle(50, 50, 200, 200); // Przykładowe wartości - dostosuj do swoich potrzeb
+
+                // Wykonaj segmentację metodą GrabCut
+                CvInvoke.GrabCut(this.mat, mask, rect, new Mat(), new Mat(), 5, GrabcutInitType.InitWithRect);
+
+                // Wybierz, które piksele zostaną uznane za obiekt
+                byte[] objectPixels = new byte[mask.Rows * mask.Cols];
+                mask.CopyTo(objectPixels);
+
+                // Przekształć maskę, aby piksele oznaczone jako obiekt miały wartość 255, a tło 0
+                for (int i = 0; i < objectPixels.Length; i++)
+                {
+                    objectPixels[i] = (byte)(objectPixels[i] == 1 ? 255 : 0);
+                }
+
+                // Stwórz obiekt Mat z przekształconą maską
+                Mat result = new Mat(mask.Size, DepthType.Cv8U, 1);
+                result.SetTo(objectPixels);
+
+                // Wyświetl wynik segmentacji
+                this.mat = result;
+                this.img.Source = Imaging.CreateBitmapSourceFromHBitmap(result.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+                this.Title = "GrabCut Segmentation";
+                this?.HistogramUpdate();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("An error occurred: " + ex.Message);
+            }
+        }
+        public void Watershed()
+        {
+            Image<Gray, byte> gray = this.mat.ToImage<Gray, byte>();
+            Image<Gray, byte> thresh = new Image<Gray, byte>(gray.Width, gray.Height);
+            CvInvoke.Threshold(gray, thresh, 0, 255, Emgu.CV.CvEnum.ThresholdType.BinaryInv | Emgu.CV.CvEnum.ThresholdType.Otsu);
+
+            Matrix<byte> kernel = new Matrix<byte>(new Byte[3, 3] { { 1, 1, 1 }, { 1, 1, 1 }, { 1, 1, 1 } });
+            Image<Gray, Byte> opening = thresh.MorphologyEx(Emgu.CV.CvEnum.MorphOp.Open, kernel, new System.Drawing.Point(-1, -1), 2, Emgu.CV.CvEnum.BorderType.Default, new MCvScalar());
+            Image<Gray, Byte> sureBg = opening.Dilate(3);
+
+            Mat distanceTransform = new Mat();
+            CvInvoke.DistanceTransform(opening, distanceTransform, null, Emgu.CV.CvEnum.DistType.L2, 5);
+
+            double minVal = 0, maxVal = 0;
+            System.Drawing.Point minLoc = new System.Drawing.Point(), maxLoc = new System.Drawing.Point();
+            CvInvoke.MinMaxLoc(distanceTransform, ref minVal, ref maxVal, ref minLoc, ref maxLoc);
+
+            Mat sureFg0 = new Mat();
+            CvInvoke.Threshold(distanceTransform, sureFg0, 0.7 * maxVal, 255, Emgu.CV.CvEnum.ThresholdType.Binary);
+            Mat sureFg = new Mat();
+            sureFg0.ConvertTo(sureFg, Emgu.CV.CvEnum.DepthType.Cv8U);
+
+            Mat unknown = new Mat();
+            CvInvoke.Subtract(sureBg, sureFg, unknown);
+
+            Mat markers = new Mat();
+            CvInvoke.ConnectedComponents(sureFg, markers);
+            markers = markers + 1;
+
+            Mat zeros = new Mat(markers.Size, markers.Depth, markers.NumberOfChannels);
+            zeros.SetTo(new MCvScalar(0));
+            CvInvoke.BitwiseNot(unknown, unknown);
+            zeros.SetTo(new MCvScalar(1), unknown);
+
+            CvInvoke.Watershed(this.mat, markers);
+
+            Mat mask = new Mat();
+            zeros.SetTo(new MCvScalar(-1));
+            CvInvoke.Compare(markers, zeros, mask, Emgu.CV.CvEnum.CmpType.Equal);
+            mask.ConvertTo(mask, Emgu.CV.CvEnum.DepthType.Cv8U);
+
+            Mat blue = new Mat(this.mat.Size, this.mat.Depth, 3);
+            blue.SetTo(new MCvScalar(255, 0, 0));
+            blue.CopyTo(this.mat, mask);
+
+
+            img.Source = Imaging.CreateBitmapSourceFromHBitmap(mat.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+            Title = "Watershed Segmentation";
+            HistogramUpdate();
+        }
+
+        public void Inpaint(List<Operations> imagesList)
+        {
+            Inpaint inpaint = new Inpaint(imagesList);
+
+            if (inpaint.ShowDialog() == true)
+            {
+                Mat firstImage = imagesList[inpaint.FirstImgIndex].mat; 
+                Mat secondImage = imagesList[inpaint.SecondImgIndex].mat; 
+                Image<Gray, byte> image1 = firstImage.ToImage<Gray, byte>();
+                Image<Gray, byte> image2 = secondImage.ToImage<Gray, byte>();
+
+                Mat inpaintedImage = new Mat();
+                CvInvoke.Inpaint(image1, image2, inpaintedImage, 3, InpaintType.NS);
+    
+                BitmapSource bitmapSource = Imaging.CreateBitmapSourceFromHBitmap(inpaintedImage.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+                Operations imgWindow = new Operations(inpaintedImage, bitmapSource, "Impainted image");
+                imgWindow.Show();
+                imagesList.Add(imgWindow);
+            }
+        }
+
     }
 }
 

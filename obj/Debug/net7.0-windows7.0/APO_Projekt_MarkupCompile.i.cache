@@ -10,11 +10,11 @@ none
 false
 TRACE;DEBUG;NET;NET7_0;NETCOREAPP
 C:\Users\Patryk\Desktop\c#\APO_Projekt\App.xaml
-9-1500701492
+11-933007661
 
-1330899236
+15-124199718
 209-2045273314
-Features\Canals.xaml;Features\Histogram.xaml;Features\Mask3x3.xaml;Features\MedianFiltration.xaml;Features\Morphology.xaml;Features\OperationSelector.xaml;Features\StretchData.xaml;Focused window\Operations.xaml;MainWindow.xaml;
+Features\AboutProgram.xaml;Features\Canals.xaml;Features\Histogram.xaml;Features\Inpaint.xaml;Features\Mask3x3.xaml;Features\MedianFiltration.xaml;Features\Morphology.xaml;Features\OperationSelector.xaml;Features\StretchData.xaml;Focused window\Operations.xaml;MainWindow.xaml;
 
 True
 
