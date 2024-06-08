@@ -206,30 +206,54 @@ namespace APO_Projekt
         }
 
         public Mat ApplyLinearSharpening(float[,] mask, BorderType selectedBorderType, string title)
-        {  
-                Mat grayImage = new Mat();
+        {
+            bool isColorImage = this.mat.NumberOfChannels == 3;
+
+            Mat grayImage = new Mat();
+
+            if (isColorImage)
+            {
                 CvInvoke.CvtColor(this.mat, grayImage, ColorConversion.Bgr2Gray);
+            }
+            else
+            {
+                // Jeśli obraz jest już w skali szarości, kopiujemy go bez zmian
+                grayImage = this.mat.Clone();
+            }
 
+            ConvolutionKernelF matrixKernel = new ConvolutionKernelF(mask);
 
-                ConvolutionKernelF matrixKernel = new ConvolutionKernelF(mask);
+            // Tworzymy macierz wynikową dla obrazu w skali szarości
+            Mat sharpenedMat = new Mat(grayImage.Size, grayImage.Depth, grayImage.NumberOfChannels);
+            System.Drawing.Point point = new System.Drawing.Point(-1, -1);
 
-             
-                Mat sharpenedMat = new Mat(grayImage.Size, grayImage.Depth, grayImage.NumberOfChannels);
-                System.Drawing.Point point = new System.Drawing.Point(-1, -1);
+            CvInvoke.Filter2D(grayImage, sharpenedMat, matrixKernel, point, 0, selectedBorderType);
 
-                CvInvoke.Filter2D(grayImage, sharpenedMat, matrixKernel, point, 0, selectedBorderType);
-
-            //  Mat colorImage = new Mat();
-            //   CvInvoke.CvtColor(sharpenedMat, colorImage, ColorConversion.Gray2Bgr);
+            // Odwracamy kolory w wynikowej macierzy
             CvInvoke.BitwiseNot(sharpenedMat, sharpenedMat);
 
-            this.mat = sharpenedMat;
-                this.img.Source = Imaging.CreateBitmapSourceFromHBitmap(sharpenedMat.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
-                this.Title = title;
-                HistogramUpdate();
+            // Aktualizujemy macierz this.mat
+            if (isColorImage)
+            {
+                // Jeśli oryginalny obraz był kolorowy, konwertujemy wynikowy obraz z powrotem do formatu BGR
+                Mat colorImage = new Mat();
+                CvInvoke.CvtColor(sharpenedMat, colorImage, ColorConversion.Gray2Bgr);
+                this.mat = colorImage;
+            }
+            else
+            {
+                // Jeśli oryginalny obraz był w skali szarości, po prostu ustawiamy wynikową macierz
+                this.mat = sharpenedMat;
+            }
 
-                return this.mat;
+            // Aktualizujemy źródło obrazu w interfejsie użytkownika
+            this.img.Source = Imaging.CreateBitmapSourceFromHBitmap(this.mat.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+            this.Title = title;
+            HistogramUpdate();
+
+            return this.mat;
         }
+
 
 
         static double[,] Convolve(double[,] matrix1, double[,] matrix2)

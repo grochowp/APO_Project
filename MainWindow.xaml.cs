@@ -535,7 +535,7 @@ namespace APO_Projekt
 
         private void ApplyLinearSharpening(string title)
         {
-
+            
             float[,] mask = null;
 
             switch (title)
@@ -852,25 +852,25 @@ namespace APO_Projekt
             {
                 Mat firstMat = new Mat();
                 Mat secondImage = displayedImage.Clone();
-
+                BorderType borderType = selectedBorderType;
 
 
                 switch (projekt.BorderType)
                 {
                     case "Default":
-                        BorderType_Default_Click(this, null);
+                        selectedBorderType = BorderType.Default;
                         break;
 
                     case "Isolated":
-                        BorderType_Isolated_Click(this, null);
+                        selectedBorderType = BorderType.Isolated;
                         break;
                     case
                         "Reflect":
-                        BorderType_Reflect_Click(this, null);
+                        selectedBorderType = BorderType.Reflect;
                         break;
                     case
                         "Replicate":
-                        BorderType_Replicate_Click(this, null);
+                        selectedBorderType = BorderType.Replicate;
                         break;
                 }
 
@@ -878,9 +878,15 @@ namespace APO_Projekt
 
                 firstMat = displayedImage;
 
+                bool isColorImage = secondImage.NumberOfChannels == 3;
 
-                CvInvoke.CvtColor(secondImage, secondImage, ColorConversion.Bgr2Gray);
-                //  CvInvoke.CvtColor(displayedImage, displayedImage, ColorConversion.Bgr2Gray);
+
+                if (isColorImage)
+                {
+                    CvInvoke.CvtColor(secondImage, secondImage, ColorConversion.Bgr2Gray);
+                }
+               
+
                 BitmapSource bitmapSource = Imaging.CreateBitmapSourceFromHBitmap(secondImage.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
                 Operations imgWindow = new Operations(secondImage, bitmapSource, "(Gray)");
                 imgWindow.Show();
@@ -888,6 +894,7 @@ namespace APO_Projekt
 
 
                 operations.Show2dHistogram(firstMat, secondImage);
+                selectedBorderType = borderType;
 
             }
         }

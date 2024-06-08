@@ -85,7 +85,7 @@ namespace APO_Projekt.Features {
                 return;
             }
             _contentLoaded = true;
-            System.Uri resourceLocater = new System.Uri("/APO_Projekt;V1.0.0.0;component/features/wykladprojekt.xaml", System.UriKind.Relative);
+            System.Uri resourceLocater = new System.Uri("/APO_Projekt;component/features/wykladprojekt.xaml", System.UriKind.Relative);
             
             #line 1 "..\..\..\..\Features\WykladProjekt.xaml"
             System.Windows.Application.LoadComponent(this, resourceLocater);
