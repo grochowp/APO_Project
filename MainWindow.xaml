@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:APO_Projekt"
         mc:Ignorable="d"
-        Title="MainWindow" Height="150" Width="470">
+        Title="APO_Projekt" Height="150" Width="530">
     <Grid>
         
         <Menu>
@@ -71,13 +71,15 @@
                     <MenuItem Header="Downscale" Click="PyramidDownscale_Click" />
                 </MenuItem>
                 <MenuItem Header="Hough" Click="Hough_Click"/>
-                <MenuItem Header="Profile line" Click="ProfileLine_Click"/>
+              
             </MenuItem>
             <MenuItem Header="Lab4"  Width="60">
                 <MenuItem Header="GrabCut" Click="GrabCut_Click"/>
-                <MenuItem Header="Watershed" Click="Watershed_Click"/>
                 <MenuItem Header="Inpaint" Click="Inpaint_Click"/>
             </MenuItem>
+            <MenuItem Header="Wyklad"  Width="60" Click="Wyklad_Click"/>
+
+
             <MenuItem Header="Save Image" Click="SaveImage_Click"/>
             <MenuItem Header="About"  Width="60" Click="AboutInfo_Click"/>
         </Menu>

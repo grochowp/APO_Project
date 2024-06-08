@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "RY7YOtPO1y6WzDjm9dNmsNs8VA2iq+rCzX9lYDqL5nFBmMFDACzHAodZpQEnN05rUMVjG/PozWTxsns8kVA3Og==",
+  "dgSpecHash": "8A3aMIlJZTS2vqGTobZvwkRrEN0P0kY7o3H+mBNdTnD+LUy4xir32SCT490AHhbLd6tTEuatRwKmtqrrsB3Grw==",
   "success": true,
   "projectFilePath": "C:\\Users\\Patryk\\Desktop\\c#\\APO_Projekt\\APO_Projekt.csproj",
   "expectedPackageFiles": [
@@ -13,12 +13,17 @@
     "C:\\Users\\Patryk\\.nuget\\packages\\harfbuzzsharp\\7.3.0\\harfbuzzsharp.7.3.0.nupkg.sha512",
     "C:\\Users\\Patryk\\.nuget\\packages\\harfbuzzsharp.nativeassets.macos\\7.3.0\\harfbuzzsharp.nativeassets.macos.7.3.0.nupkg.sha512",
     "C:\\Users\\Patryk\\.nuget\\packages\\harfbuzzsharp.nativeassets.win32\\7.3.0\\harfbuzzsharp.nativeassets.win32.7.3.0.nupkg.sha512",
+    "C:\\Users\\Patryk\\.nuget\\packages\\livecharts\\0.9.7\\livecharts.0.9.7.nupkg.sha512",
+    "C:\\Users\\Patryk\\.nuget\\packages\\livecharts.wpf\\0.9.7\\livecharts.wpf.0.9.7.nupkg.sha512",
     "C:\\Users\\Patryk\\.nuget\\packages\\livechartscore\\2.0.0-rc2\\livechartscore.2.0.0-rc2.nupkg.sha512",
     "C:\\Users\\Patryk\\.nuget\\packages\\livechartscore.skiasharpview\\2.0.0-rc2\\livechartscore.skiasharpview.2.0.0-rc2.nupkg.sha512",
     "C:\\Users\\Patryk\\.nuget\\packages\\livechartscore.skiasharpview.wpf\\2.0.0-rc2\\livechartscore.skiasharpview.wpf.2.0.0-rc2.nupkg.sha512",
     "C:\\Users\\Patryk\\.nuget\\packages\\microsoft.netcore.platforms\\1.1.1\\microsoft.netcore.platforms.1.1.1.nupkg.sha512",
     "C:\\Users\\Patryk\\.nuget\\packages\\microsoft.netcore.targets\\1.1.3\\microsoft.netcore.targets.1.1.3.nupkg.sha512",
     "C:\\Users\\Patryk\\.nuget\\packages\\microsoft.win32.systemevents\\8.0.0\\microsoft.win32.systemevents.8.0.0.nupkg.sha512",
+    "C:\\Users\\Patryk\\.nuget\\packages\\oxyplot.core\\2.1.2\\oxyplot.core.2.1.2.nupkg.sha512",
+    "C:\\Users\\Patryk\\.nuget\\packages\\oxyplot.wpf\\2.1.2\\oxyplot.wpf.2.1.2.nupkg.sha512",
+    "C:\\Users\\Patryk\\.nuget\\packages\\oxyplot.wpf.shared\\2.1.2\\oxyplot.wpf.shared.2.1.2.nupkg.sha512",
     "C:\\Users\\Patryk\\.nuget\\packages\\runtime.native.system\\4.3.0\\runtime.native.system.4.3.0.nupkg.sha512",
     "C:\\Users\\Patryk\\.nuget\\packages\\skiasharp\\2.88.6\\skiasharp.2.88.6.nupkg.sha512",
     "C:\\Users\\Patryk\\.nuget\\packages\\skiasharp.harfbuzz\\2.88.6\\skiasharp.harfbuzz.2.88.6.nupkg.sha512",
@@ -45,5 +50,26 @@
     "C:\\Users\\Patryk\\.nuget\\packages\\system.threading\\4.3.0\\system.threading.4.3.0.nupkg.sha512",
     "C:\\Users\\Patryk\\.nuget\\packages\\system.threading.tasks\\4.3.0\\system.threading.tasks.4.3.0.nupkg.sha512"
   ],
-  "logs": []
+  "logs": [
+    {
+      "code": "NU1701",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Pakiet „LiveCharts 0.9.7” został przywrócony przy użyciu elementu „.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8, .NETFramework,Version=v4.8.1” zamiast platformy docelowej projektu „net7.0-windows7.0”. Ten pakiet może nie być w pełni kompatybilny z Twoim projektem.",
+      "libraryId": "LiveCharts",
+      "targetGraphs": [
+        "net7.0-windows7.0"
+      ]
+    },
+    {
+      "code": "NU1701",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Pakiet „LiveCharts.Wpf 0.9.7” został przywrócony przy użyciu elementu „.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8, .NETFramework,Version=v4.8.1” zamiast platformy docelowej projektu „net7.0-windows7.0”. Ten pakiet może nie być w pełni kompatybilny z Twoim projektem.",
+      "libraryId": "LiveCharts.Wpf",
+      "targetGraphs": [
+        "net7.0-windows7.0"
+      ]
+    }
+  ]
 }

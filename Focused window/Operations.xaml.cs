@@ -21,6 +21,7 @@ namespace APO_Projekt
     {
         public Mat? mat;
         public Histogram? hist;
+        public Histogram2D hist2d;
 
         public static event Action<Mat, Operations>? windowImgFocused;
         public static event Action? windowImgClosed;
@@ -51,6 +52,21 @@ namespace APO_Projekt
             }
         }
 
+        public void Show2dHistogram(Mat mat1, Mat mat2)
+        {
+           
+            if (this.hist2d == null)
+            {
+                this.hist2d = new Histogram2D();
+                this.hist2d.Histogram2DShow(mat1, mat2);
+                this.hist2d.Closed += (_, _) => this.hist2d = null;
+            }
+            else
+            {
+                this.hist2d.Focus();
+            }
+        }
+
         public void HistogramShow()
         {
             if (this.mat == null || this.mat.NumberOfChannels != 1)
@@ -70,14 +86,14 @@ namespace APO_Projekt
             }
         }
 
-        public void StretchHistogram(Mat mat)
+        public Mat StretchHistogram(Mat mat)
         {
-            this.StretchContrast(0, 255, 0, 255);
+           return this.StretchContrast(0, 255, 0, 255);
         }
 
-        public void StretchContrast(int p1, int p2, int q3, int q4)
+        public Mat StretchContrast(int p1, int p2, int q3, int q4)
         {
-            if (mat == null) return;
+            if (mat == null) return null;
             Mat stretchedImage = mat.Clone();
 
             Image<Gray, byte> grayImage = stretchedImage.ToImage<Gray, byte>();
@@ -114,7 +130,7 @@ namespace APO_Projekt
 
             this.mat = grayImage.Mat;
             this.img.Source = Imaging.CreateBitmapSourceFromHBitmap(this.mat.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
-
+            return this.mat;
         }
 
         public void EqualizeHistogram()
@@ -189,27 +205,32 @@ namespace APO_Projekt
             imgWindow.Show();
         }
 
-        public void ApplyLinearSharpening(float[,] mask, BorderType selectedBorderType, string title)
-        {
-            ConvolutionKernelF matrixKernel = new ConvolutionKernelF(mask);
-
-            Mat sharpenedMat = new Mat();
-            System.Drawing.Point point = new System.Drawing.Point(-1, -1);
-
-            if (mat.Size != sharpenedMat.Size)
-            {
-                sharpenedMat = mat.Clone();
-            }
-
-            CvInvoke.Filter2D(mat, sharpenedMat, matrixKernel, point, 0, selectedBorderType);
-
-            mat = sharpenedMat;
-            img.Source = Imaging.CreateBitmapSourceFromHBitmap(sharpenedMat.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
-            Title = title;
-            HistogramUpdate();
+        public Mat ApplyLinearSharpening(float[,] mask, BorderType selectedBorderType, string title)
+        {  
+                Mat grayImage = new Mat();
+                CvInvoke.CvtColor(this.mat, grayImage, ColorConversion.Bgr2Gray);
 
 
+                ConvolutionKernelF matrixKernel = new ConvolutionKernelF(mask);
+
+             
+                Mat sharpenedMat = new Mat(grayImage.Size, grayImage.Depth, grayImage.NumberOfChannels);
+                System.Drawing.Point point = new System.Drawing.Point(-1, -1);
+
+                CvInvoke.Filter2D(grayImage, sharpenedMat, matrixKernel, point, 0, selectedBorderType);
+
+            //  Mat colorImage = new Mat();
+            //   CvInvoke.CvtColor(sharpenedMat, colorImage, ColorConversion.Gray2Bgr);
+            CvInvoke.BitwiseNot(sharpenedMat, sharpenedMat);
+
+            this.mat = sharpenedMat;
+                this.img.Source = Imaging.CreateBitmapSourceFromHBitmap(sharpenedMat.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+                this.Title = title;
+                HistogramUpdate();
+
+                return this.mat;
         }
+
 
         static double[,] Convolve(double[,] matrix1, double[,] matrix2)
         {
@@ -239,7 +260,7 @@ namespace APO_Projekt
             return kernel;
         }
 
-        public void LinearFiltering(BorderType selectedBorderType)
+        public Mat LinearFiltering(BorderType selectedBorderType)
         {
             Mask3x3 maskSmooth = new Mask3x3();
             if (maskSmooth.ShowDialog() == true)
@@ -318,9 +339,11 @@ namespace APO_Projekt
                     BitmapSource bitmapSource = Imaging.CreateBitmapSourceFromHBitmap(result5x5.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
                     Operations imgWindow = new Operations(result5x5, bitmapSource, "5x5 mask operation");
                     imgWindow.Show();
-
+                    return this.mat;
                 }
+                return null;
             }
+            return null;
         }
 
         public void PointOperations(List<Operations> imagesList)
@@ -413,7 +436,7 @@ namespace APO_Projekt
             }
             return tempMat;
         }
-        public void Morphology(BorderType selectedBorderType)
+        public Mat Morphology(BorderType selectedBorderType)
         {
             Morphology morphology = new Morphology();
 
@@ -445,10 +468,12 @@ namespace APO_Projekt
                 this.img.Source = Imaging.CreateBitmapSourceFromHBitmap(resultImage.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
                 this.Title = "Mono (" + morphology.Operation + ") (" + morphology.Size + "x" + morphology.Size + ") (" + morphology.Element + ")";
                 this?.HistogramUpdate();
+                return this.mat;
             }
+            return null;
         }
 
-        public void Pyramid(string method)
+        public Mat Pyramid(string method)
         {
             Mat pyrImg = this.mat.Clone();
             Image<Gray, byte> grayImage = pyrImg.ToImage<Gray, byte>();
@@ -469,9 +494,10 @@ namespace APO_Projekt
             this.img.Source = Imaging.CreateBitmapSourceFromHBitmap(scaledMat.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
             this.Title = $"Pyramid {method}";
             this?.HistogramUpdate();
+            return this.mat;
         }
 
-        public void Skeletonize()
+        public Mat Skeletonize()
         {
             int size = this.mat.Width * this.mat.Height;
 
@@ -502,13 +528,12 @@ namespace APO_Projekt
             this.img.Source = Imaging.CreateBitmapSourceFromHBitmap(skel.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
             this.Title = "Skeletonized";
             this?.HistogramUpdate();
-
+            return this.mat;
         }
 
-        public void Hough()
+        public Mat Hough()
         {
-            try
-            {
+           
                 Mat image = this.mat.Clone();
                 Image<Gray, byte> gray = image.ToImage<Gray, byte>();
 
@@ -533,111 +558,46 @@ namespace APO_Projekt
                 this.img.Source = Imaging.CreateBitmapSourceFromHBitmap(gray.Mat.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
                 this.Title = "Hough";
                 this?.HistogramUpdate();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Wystąpił błąd: " + ex.Message);
-            }
+                return this.mat;
+            
+           
         }
 
-        public void ProfileLine()
+        public Mat GrabCut()
         {
-
-        }
-        public void GrabCut()
-        {
-            try
-            {
+           
                 if (this.mat == null)
                 {
                     MessageBox.Show("No image loaded.");
-                    return;
+                    return null;
                 }
 
                 Mat mask = new Mat(this.mat.Size, DepthType.Cv8U, 1);
-                mask.SetTo(new MCvScalar(2)); // Ustaw obszar do segmentacji jako nieokreślony
+                mask.SetTo(new MCvScalar(2));
 
-                // Definiuj prostokąt obszaru inicjalizacji
-                Rectangle rect = new Rectangle(50, 50, 200, 200); // Przykładowe wartości - dostosuj do swoich potrzeb
+                Rectangle rect = new Rectangle(50, 50, 200, 200); 
 
-                // Wykonaj segmentację metodą GrabCut
                 CvInvoke.GrabCut(this.mat, mask, rect, new Mat(), new Mat(), 5, GrabcutInitType.InitWithRect);
 
-                // Wybierz, które piksele zostaną uznane za obiekt
                 byte[] objectPixels = new byte[mask.Rows * mask.Cols];
                 mask.CopyTo(objectPixels);
 
-                // Przekształć maskę, aby piksele oznaczone jako obiekt miały wartość 255, a tło 0
                 for (int i = 0; i < objectPixels.Length; i++)
                 {
                     objectPixels[i] = (byte)(objectPixels[i] == 1 ? 255 : 0);
                 }
-
-                // Stwórz obiekt Mat z przekształconą maską
                 Mat result = new Mat(mask.Size, DepthType.Cv8U, 1);
                 result.SetTo(objectPixels);
 
-                // Wyświetl wynik segmentacji
+
                 this.mat = result;
                 this.img.Source = Imaging.CreateBitmapSourceFromHBitmap(result.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
                 this.Title = "GrabCut Segmentation";
                 this?.HistogramUpdate();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("An error occurred: " + ex.Message);
-            }
+                return this.mat;
+           
         }
-        public void Watershed()
-        {
-            Image<Gray, byte> gray = this.mat.ToImage<Gray, byte>();
-            Image<Gray, byte> thresh = new Image<Gray, byte>(gray.Width, gray.Height);
-            CvInvoke.Threshold(gray, thresh, 0, 255, Emgu.CV.CvEnum.ThresholdType.BinaryInv | Emgu.CV.CvEnum.ThresholdType.Otsu);
-
-            Matrix<byte> kernel = new Matrix<byte>(new Byte[3, 3] { { 1, 1, 1 }, { 1, 1, 1 }, { 1, 1, 1 } });
-            Image<Gray, Byte> opening = thresh.MorphologyEx(Emgu.CV.CvEnum.MorphOp.Open, kernel, new System.Drawing.Point(-1, -1), 2, Emgu.CV.CvEnum.BorderType.Default, new MCvScalar());
-            Image<Gray, Byte> sureBg = opening.Dilate(3);
-
-            Mat distanceTransform = new Mat();
-            CvInvoke.DistanceTransform(opening, distanceTransform, null, Emgu.CV.CvEnum.DistType.L2, 5);
-
-            double minVal = 0, maxVal = 0;
-            System.Drawing.Point minLoc = new System.Drawing.Point(), maxLoc = new System.Drawing.Point();
-            CvInvoke.MinMaxLoc(distanceTransform, ref minVal, ref maxVal, ref minLoc, ref maxLoc);
-
-            Mat sureFg0 = new Mat();
-            CvInvoke.Threshold(distanceTransform, sureFg0, 0.7 * maxVal, 255, Emgu.CV.CvEnum.ThresholdType.Binary);
-            Mat sureFg = new Mat();
-            sureFg0.ConvertTo(sureFg, Emgu.CV.CvEnum.DepthType.Cv8U);
-
-            Mat unknown = new Mat();
-            CvInvoke.Subtract(sureBg, sureFg, unknown);
-
-            Mat markers = new Mat();
-            CvInvoke.ConnectedComponents(sureFg, markers);
-            markers = markers + 1;
-
-            Mat zeros = new Mat(markers.Size, markers.Depth, markers.NumberOfChannels);
-            zeros.SetTo(new MCvScalar(0));
-            CvInvoke.BitwiseNot(unknown, unknown);
-            zeros.SetTo(new MCvScalar(1), unknown);
-
-            CvInvoke.Watershed(this.mat, markers);
-
-            Mat mask = new Mat();
-            zeros.SetTo(new MCvScalar(-1));
-            CvInvoke.Compare(markers, zeros, mask, Emgu.CV.CvEnum.CmpType.Equal);
-            mask.ConvertTo(mask, Emgu.CV.CvEnum.DepthType.Cv8U);
-
-            Mat blue = new Mat(this.mat.Size, this.mat.Depth, 3);
-            blue.SetTo(new MCvScalar(255, 0, 0));
-            blue.CopyTo(this.mat, mask);
-
-
-            img.Source = Imaging.CreateBitmapSourceFromHBitmap(mat.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
-            Title = "Watershed Segmentation";
-            HistogramUpdate();
-        }
+       
 
         public void Inpaint(List<Operations> imagesList)
         {

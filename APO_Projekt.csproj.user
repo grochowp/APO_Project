@@ -16,6 +16,9 @@
     <Compile Update="Features\Histogram.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Features\Histogram2D.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Features\Inpaint.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -34,6 +37,9 @@
     <Compile Update="Features\StretchData.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Features\WykladProjekt.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Focused window\Operations.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -46,6 +52,9 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Features\Histogram.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Features\Histogram2D.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Features\Inpaint.xaml">
@@ -61,6 +70,9 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Features\OperationSelector.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Features\WykladProjekt.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="MainWindow.xaml">

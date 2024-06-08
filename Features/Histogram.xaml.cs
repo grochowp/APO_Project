@@ -1,14 +1,17 @@
 ﻿using Emgu.CV;
 using Emgu.CV.Structure;
+using LiveCharts;
+using LiveCharts.Wpf;
 using LiveChartsCore;
-using LiveChartsCore.Kernel;
+using LiveChartsCore.Defaults;
 using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore.SkiaSharpView.Painting;
+using LiveChartsCore.SkiaSharpView.WPF;
 using SkiaSharp;
-
+using System;
 using System.Collections.Generic;
 using System.Windows;
-using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace APO_Projekt
 {
@@ -57,6 +60,7 @@ namespace APO_Projekt
 
             this.Show();
         }
+       
     }
 
     public class TabHist

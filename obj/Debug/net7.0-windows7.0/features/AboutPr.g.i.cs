@@ -53,7 +53,7 @@ namespace APO_Projekt {
                 return;
             }
             _contentLoaded = true;
-            System.Uri resourceLocater = new System.Uri("/APO_Projekt;V1.0.0.0;component/features/aboutpr.xaml", System.UriKind.Relative);
+            System.Uri resourceLocater = new System.Uri("/APO_Projekt;component/features/aboutpr.xaml", System.UriKind.Relative);
             
             #line 1 "..\..\..\..\Features\AboutPr.xaml"
             System.Windows.Application.LoadComponent(this, resourceLocater);
