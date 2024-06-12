@@ -1,0 +1,20 @@
+﻿APO_Projekt
+1.0.0.0
+
+winexe
+C#
+.cs
+C:\Users\Patryk\Desktop\c#\APO_Projekt\obj\Release\net7.0-windows7.0\
+APO_Projekt
+none
+false
+TRACE;RELEASE;NET;NET7_0;NETCOREAPP
+C:\Users\Patryk\Desktop\c#\APO_Projekt\App.xaml
+13-204260425
+
+171112768408
+214987278553
+Features\AboutProgram.xaml;Features\Canals.xaml;Features\Histogram.xaml;Features\Histogram2D.xaml;Features\Inpaint.xaml;Features\Mask3x3.xaml;Features\MedianFiltration.xaml;Features\Morphology.xaml;Features\OperationSelector.xaml;Features\StretchData.xaml;Features\WykladProjekt.xaml;Focused window\Operations.xaml;MainWindow.xaml;
+
+True
+

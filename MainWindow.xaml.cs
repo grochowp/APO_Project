@@ -17,6 +17,7 @@ using System.Security.Policy;
 using System.Drawing.Imaging;
 using System.IO;
 using Emgu.CV.Reg;
+using Emgu.CV.Ocl;
 
 namespace APO_Projekt
 {
@@ -161,7 +162,7 @@ namespace APO_Projekt
 
             {
                 string fileName = Image.FileName;
-                Mat ImageOpened = CvInvoke.Imread(fileName, ImreadModes.Grayscale);
+                Mat ImageOpened = CvInvoke.Imread(fileName, ImreadModes.Color);
                 BitmapSource bitmapSource = Imaging.CreateBitmapSourceFromHBitmap(ImageOpened.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
                 string title = "Mono " + Path.GetFileNameWithoutExtension(fileName);
                 Operations image = new Operations(ImageOpened, bitmapSource, title);
@@ -409,6 +410,8 @@ namespace APO_Projekt
             System.Drawing.Size kernelSize = new System.Drawing.Size((int)3, (int)3);
 
             CvInvoke.GaussianBlur(displayedImage, smoothedMat, kernelSize, 0);
+
+
             displayedImage = smoothedMat;
             operations.mat = smoothedMat;
             operations.img.Source = Imaging.CreateBitmapSourceFromHBitmap(smoothedMat.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
@@ -423,17 +426,8 @@ namespace APO_Projekt
                 return;
             }
 
-            Mat edgesMat = new Mat();
+            displayedImage = operations.Sobel(displayedImage, selectedBorderType);
 
-            CvInvoke.Sobel(displayedImage, edgesMat, DepthType.Cv8U, 1, 1, 3, 1, 1, selectedBorderType);
-            CvInvoke.BitwiseNot(edgesMat, edgesMat);
-            CvInvoke.CvtColor(displayedImage, displayedImage, ColorConversion.Bgr2Gray);
-
-            displayedImage = edgesMat;
-            operations.mat = edgesMat;
-            operations.img.Source = Imaging.CreateBitmapSourceFromHBitmap(edgesMat.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
-            operations.Title = "(Sobel) " + selectedBorderType;
-            operations?.HistogramUpdate();
         }
 
         private void LaplacianEdgeDetection_Click(object sender, RoutedEventArgs e)
@@ -444,19 +438,7 @@ namespace APO_Projekt
                 return;
             }
 
-            Mat edgesMat = new Mat();
-
-            CvInvoke.Laplacian(displayedImage, edgesMat, DepthType.Cv8U, 1, 1, 0, selectedBorderType);
-            CvInvoke.BitwiseNot(edgesMat, edgesMat);
-
-            //CvInvoke.Threshold(edgesMat, edgesMat, 50, 255, ThresholdType.Binary);
-            CvInvoke.CvtColor(displayedImage, displayedImage, ColorConversion.Bgr2Gray);
-
-            displayedImage = edgesMat;
-            operations.mat = edgesMat;
-            operations.img.Source = Imaging.CreateBitmapSourceFromHBitmap(edgesMat.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
-            operations.Title = "(Laplacian) " + selectedBorderType;
-            operations?.HistogramUpdate();
+            displayedImage = operations.Laplacian(displayedImage, selectedBorderType);
         }
 
         private void CannyEdgeDetection_Click(object sender, RoutedEventArgs e)
@@ -467,184 +449,126 @@ namespace APO_Projekt
                 return;
             }
 
-            Mat edgesMat = new Mat();
-            CvInvoke.Canny(displayedImage, edgesMat, 100, 200);
-
-            CvInvoke.BitwiseNot(edgesMat, edgesMat);
-            CvInvoke.CvtColor(displayedImage, displayedImage, ColorConversion.Bgr2Gray);
-
-            displayedImage = edgesMat;
-            operations.mat = edgesMat;
-            operations.img.Source = Imaging.CreateBitmapSourceFromHBitmap(edgesMat.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
-            operations.Title = "(Canny) " + selectedBorderType;
-            operations?.HistogramUpdate();
+            displayedImage = operations.Canny(displayedImage);
         }
 
         private void LinearLaplacianSharpening1_Click(object sender, RoutedEventArgs e)
         {
-
-           ApplyLinearSharpening("(mask 1) Linear Laplacian Sharpening");
+            displayedImage = ApplyOperation("Laplacian Linear Sharpening (mask 1)");
         }
 
         private void LinearLaplacianSharpening2_Click(object sender, RoutedEventArgs e)
         {
-           ApplyLinearSharpening("(mask 2) Linear Laplacian Sharpening");
+            displayedImage = ApplyOperation("Laplacian Linear Sharpening (mask 2)");
         }
 
         private void LinearLaplacianSharpening3_Click(object sender, RoutedEventArgs e)
         {
-            ApplyLinearSharpening("(mask 3) Linear Laplacian Sharpening");
+            displayedImage = ApplyOperation("Laplacian Linear Sharpening (mask 3)");
         }
 
 
-        private void PrewittEdgeDetectionH_Click(object sender, RoutedEventArgs e)
+        private void PrewittEdgeDetectionN_Click(object sender, RoutedEventArgs e)
         {
-            ApplyLinearSharpening("Prewitt H");
+            displayedImage = ApplyOperation("Prewitt N");
         }
-        private void PrewittEdgeDetectionV_Click(object sender, RoutedEventArgs e)
+        private void PrewittEdgeDetectionE_Click(object sender, RoutedEventArgs e)
         {
 
-            ApplyLinearSharpening("Prewitt V");
+            displayedImage = ApplyOperation("Prewitt E");
+        }
+        private void PrewittEdgeDetectionS_Click(object sender, RoutedEventArgs e)
+        {
+
+            displayedImage = ApplyOperation("Prewitt S");
+        }
+        private void PrewittEdgeDetectionW_Click(object sender, RoutedEventArgs e)
+        {
+
+            displayedImage = ApplyOperation("Prewitt W");
         }
         private void PrewittEdgeDetectionNE_Click(object sender, RoutedEventArgs e)
         {
-
-            ApplyLinearSharpening("Prewitt NE");
+            displayedImage = ApplyOperation("Prewitt NE");
         }
         private void PrewittEdgeDetectionSE_Click(object sender, RoutedEventArgs e)
         {
-
-            ApplyLinearSharpening("Prewitt SE");
-        }
-        private void PrewittEdgeDetectionNW_Click(object sender, RoutedEventArgs e)
-        {
-            ApplyLinearSharpening("Prewitt NW");
+            displayedImage = ApplyOperation("Prewitt SE");
         }
         private void PrewittEdgeDetectionSW_Click(object sender, RoutedEventArgs e)
         {
-            ApplyLinearSharpening("Prewitt SW");
+            displayedImage = ApplyOperation("Prewitt SW");
         }
-        private void PrewittEdgeDetectionIH_Click(object sender, RoutedEventArgs e)
+        private void PrewittEdgeDetectionNW_Click(object sender, RoutedEventArgs e)
         {
-            ApplyLinearSharpening ("Prewitt IH");
-        }
-        private void PrewittEdgeDetectionIV_Click(object sender, RoutedEventArgs e)
-        {
-            ApplyLinearSharpening("Prewitt IV");
+            displayedImage = ApplyOperation("Prewitt NW");
         }
 
-        private void ApplyLinearSharpening(string title)
+        private Mat ApplyOperation(string title)
         {
-            
-            float[,] mask = null;
+
+            int[] mask = null;
 
             switch (title)
             {
-                case "Prewitt H":
-                    mask = new float[,] {
-                        { -1, 0, 1 },
-                        { -1, 0, 1 },
-                        { -1, 0, 1 }
-                    };
-                    break;
-
-                case "Prewitt V":
-                    mask = new float[,] {
-                        { -1, -1, -1},
-                        { 0, 0, 0 },
-                        { 1, 1, 1 }
-                    };
+                case "Prewitt N":
+                    mask = new int[] { 1, 1, 1, 0, 0, 0, -1, -1, -1 };
                     break;
 
                 case "Prewitt NE":
-                    mask = new float[,] {
-                        { 0, 1, 1 },
-                        {-1, 0, 1 },
-                        {-1, -1, 0 }
-                       };
+                    mask = new int[] { 0, 1, 1, -1, 0, 1, -1, -1, 0 };
+                    break;
+
+                case "Prewitt E":
+                    mask = new int[] { -1, -1, 0, -1, 0, 1, 0, 1, 1 };
                     break;
 
                 case "Prewitt SE":
-                    mask = new float[,] {
-                       { -1, -1, 0 },
-                       {-1, 0, 1 },
-                       {0, 1, 1 }
-                    };
+                    mask = new int[] { -1, -1, 0, -1, 0, 1, 0, 1, 1 };
                     break;
 
-                case "Prewitt NW":
-                    mask = new float[,] {
-                        { 1, 1, 0 },
-                        {1, 0, -1 },
-                        {0, -1, -1 }
-                       };
+                case "Prewitt S":
+                    mask = new int[] { -1, -1, -1, 0, 0, 0, 1, 1, 1 };
                     break;
 
                 case "Prewitt SW":
-                    mask = new float[,] {
-                        { 0, -1, -1 },
-                        {1, 0, -1 },
-                        {1, 1, 0 }
-                       };
+                    mask = new int[] { 0, -1, -1, 1, 0, -1, 1, 1, 0 };
                     break;
 
-                case "Prewitt IH":
-                    mask = new float[,] {
-                       { 1, 0, -1 },
-                       {1, 0, -1 },
-                       {1, 0, -1 }
-                     };
+                case "Prewitt W":
+                    mask = new int[] { 1, 0, -1, 1, 0, -1, 1, 0, -1 };
                     break;
 
-                case "Prewitt IV":
-                    mask = new float[,] {
-                       { 0, -1, 0 },
-                       {-1, 0, -1 },
-                       {0, 1, 0 }
-                      };
+                case "Prewitt NW":
+                    mask = new int[] { 1, 1, 0, 1, 0, -1, 0, -1, -1 };
                     break;
 
-                case "(mask 1) Linear Laplacian Sharpening":
-                    mask = new float[,]{
-                        { 0, -1, 0 },
-                        { -1, 5, -1 },
-                        { 0, -1, 0 }
-                    };
+                case "Laplacian Linear Sharpening (mask 1)":
+                    mask = new int[] { 0, -1, 0, -1, 5, -1, 0, -1, 0 };
                     break;
 
-                case "(mask 2) Linear Laplacian Sharpening":
-                    mask = new float[,] {
-                        { 1, 1, 1 },
-                        {  1, -9, 1},
-                        { 1, 1, 1 }
-                       };
+                case "Laplacian Linear Sharpening (mask 2)":
+                    mask = new int[] { 1, 1, 1, 1, -9, 1, 1, 1, 1 };
                     break;
 
-                case "(mask 3) Linear Laplacian Sharpening":
-                    mask = new float[,] {
-                        { 1, -2, 1 },
-                        { -2, 5, -2 },
-                        { 1, -2, 1 }
-                    };
+                case "Laplacian Linear Sharpening (mask 3)":
+                    mask = new int[] { 1, -2, 1, -2, 5, -2, 1, -2, 1 };
                     break;
             }
 
-          
+
 
             if (displayedImage == null || operations == null)
             {
                 MessageBox.Show("No image selected.");
-                return;
+                return null;
             }
 
-            if (mask.GetLength(0) != 3 || mask.GetLength(1) != 3)
-            {
-                MessageBox.Show("Invalid mask size. Must be 3x3.");
-                return;
-            }
-            displayedImage = operations?.ApplyLinearSharpening(mask, selectedBorderType, title);
 
+            return operations?.ApplyOperation(mask, selectedBorderType, title);
 
+            /*
+             *   */
         }
         private void CustomLinearOperation_Click(object sender, RoutedEventArgs e)
         {
@@ -671,7 +595,7 @@ namespace APO_Projekt
                  {m4, m5, m6 },
                  {m7, m8, m9 }
              };
-                displayedImage = operations?.ApplyLinearSharpening(customMast, selectedBorderType, "Custom Linear Operation");
+                // displayedImage = operations?.ApplyLinearSharpening(customMast, selectedBorderType, "Custom Linear Operation");
 
 
                 /*   Mat kernel = new Mat(3, 3, DepthType.Cv32F, 1);
@@ -873,32 +797,42 @@ namespace APO_Projekt
                         selectedBorderType = BorderType.Replicate;
                         break;
                 }
+                switch (projekt.Operation)
+                {
+                    case "Canny":
+                        firstMat = operations.Canny(displayedImage);
+                        break;
+                    case "Sobel":
+                        firstMat = operations.Sobel(displayedImage, selectedBorderType);
+                        break;
+                    case "Laplacian":
+                        firstMat = operations.Laplacian(displayedImage, selectedBorderType);
+                        break;
 
-                ApplyLinearSharpening(projekt.Operation);
+                    default:
+                        firstMat = ApplyOperation(projekt.Operation);
+                        break;
 
-                firstMat = displayedImage;
+                }
+
+
 
                 bool isColorImage = secondImage.NumberOfChannels == 3;
-
 
                 if (isColorImage)
                 {
                     CvInvoke.CvtColor(secondImage, secondImage, ColorConversion.Bgr2Gray);
                 }
-               
 
                 BitmapSource bitmapSource = Imaging.CreateBitmapSourceFromHBitmap(secondImage.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
                 Operations imgWindow = new Operations(secondImage, bitmapSource, "(Gray)");
                 imgWindow.Show();
-
-
 
                 operations.Show2dHistogram(firstMat, secondImage);
                 selectedBorderType = borderType;
 
             }
         }
-
     }
 }
 

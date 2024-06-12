@@ -13,17 +13,20 @@
 
         <Label Content="Operacja na zdjęciu:" HorizontalAlignment="Left" Margin="17,86,0,0" VerticalAlignment="Top"/>
         <ComboBox HorizontalAlignment="Left" Margin="186,90,0,0" VerticalAlignment="Top" Width="154" Name="operation_cmb" SelectionChanged="operation_cmb_SelectionChanged">
-            <ComboBoxItem IsSelected="True">Prewitt H</ComboBoxItem>
-            <ComboBoxItem>Prewitt V</ComboBoxItem>
-            <ComboBoxItem>Prewitt NE</ComboBoxItem>
-            <ComboBoxItem>Prewitt SE</ComboBoxItem>
+            <ComboBoxItem IsSelected="True">Prewitt N</ComboBoxItem>
+            <ComboBoxItem>Prewitt E</ComboBoxItem>
+            <ComboBoxItem>Prewitt S</ComboBoxItem>
+            <ComboBoxItem>Prewitt W</ComboBoxItem>
             <ComboBoxItem>Prewitt NW</ComboBoxItem>
             <ComboBoxItem>Prewitt SW</ComboBoxItem>
-            <ComboBoxItem>Prewitt IH</ComboBoxItem>
-            <ComboBoxItem>Prewitt IV</ComboBoxItem>
-            <ComboBoxItem>(mask 1) Linear Laplacian Sharpening</ComboBoxItem>
-            <ComboBoxItem>(mask 2) Linear Laplacian Sharpening</ComboBoxItem>
-            <ComboBoxItem>(mask 3) Linear Laplacian Sharpening</ComboBoxItem>
+            <ComboBoxItem>Prewitt NE</ComboBoxItem>
+            <ComboBoxItem>Prewitt SE</ComboBoxItem>
+            <ComboBoxItem>Sobel</ComboBoxItem>
+            <ComboBoxItem>Laplacian</ComboBoxItem>
+            <ComboBoxItem>Canny</ComboBoxItem>
+            <ComboBoxItem>Laplacian Linear Sharpening (mask 1)</ComboBoxItem>
+            <ComboBoxItem>Laplacian Linear Sharpening (mask 2)</ComboBoxItem>
+            <ComboBoxItem>Laplacian Linear Sharpening (mask 3)</ComboBoxItem>
         </ComboBox>
 
         <Label Content="Border Type:" HorizontalAlignment="Left" Margin="57,152,0,0" VerticalAlignment="Top"/>

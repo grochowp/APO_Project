@@ -54,7 +54,7 @@ namespace APO_Projekt
 
         public void Show2dHistogram(Mat mat1, Mat mat2)
         {
-           
+
             if (this.hist2d == null)
             {
                 this.hist2d = new Histogram2D();
@@ -88,7 +88,7 @@ namespace APO_Projekt
 
         public Mat StretchHistogram(Mat mat)
         {
-           return this.StretchContrast(0, 255, 0, 255);
+            return this.StretchContrast(0, 255, 0, 255);
         }
 
         public Mat StretchContrast(int p1, int p2, int q3, int q4)
@@ -205,56 +205,115 @@ namespace APO_Projekt
             imgWindow.Show();
         }
 
-        public Mat ApplyLinearSharpening(float[,] mask, BorderType selectedBorderType, string title)
+        public Mat ApplyOperation(int[] mask, BorderType selectedBorderType, string title)
         {
-            bool isColorImage = this.mat.NumberOfChannels == 3;
 
             Mat grayImage = new Mat();
 
-            if (isColorImage)
+            if (this.mat.NumberOfChannels == 1)
+            {
+                grayImage = this.mat.Clone();
+            }
+            else
             {
                 CvInvoke.CvtColor(this.mat, grayImage, ColorConversion.Bgr2Gray);
             }
-            else
+
+            // ConvolutionKernelF matrixKernel = new ConvolutionKernelF(mask);
+            Matrix<double> kernel = new Matrix<double>(3, 3);
+            for (int i = 0; i < 3; ++i)
             {
-                // Jeśli obraz jest już w skali szarości, kopiujemy go bez zmian
-                grayImage = this.mat.Clone();
+                for (int j = 0; j < 3; ++j)
+                {
+                    kernel[i, j] = mask[i * 3 + j];
+                }
             }
 
-            ConvolutionKernelF matrixKernel = new ConvolutionKernelF(mask);
-
-            // Tworzymy macierz wynikową dla obrazu w skali szarości
             Mat sharpenedMat = new Mat(grayImage.Size, grayImage.Depth, grayImage.NumberOfChannels);
             System.Drawing.Point point = new System.Drawing.Point(-1, -1);
 
-            CvInvoke.Filter2D(grayImage, sharpenedMat, matrixKernel, point, 0, selectedBorderType);
+            CvInvoke.Filter2D(grayImage, sharpenedMat, kernel, point, 0, selectedBorderType);
+            // CvInvoke.BitwiseNot(sharpenedMat, sharpenedMat);
 
-            // Odwracamy kolory w wynikowej macierzy
-            CvInvoke.BitwiseNot(sharpenedMat, sharpenedMat);
-
-            // Aktualizujemy macierz this.mat
-            if (isColorImage)
-            {
-                // Jeśli oryginalny obraz był kolorowy, konwertujemy wynikowy obraz z powrotem do formatu BGR
-                Mat colorImage = new Mat();
-                CvInvoke.CvtColor(sharpenedMat, colorImage, ColorConversion.Gray2Bgr);
-                this.mat = colorImage;
-            }
-            else
-            {
-                // Jeśli oryginalny obraz był w skali szarości, po prostu ustawiamy wynikową macierz
-                this.mat = sharpenedMat;
-            }
-
-            // Aktualizujemy źródło obrazu w interfejsie użytkownika
-            this.img.Source = Imaging.CreateBitmapSourceFromHBitmap(this.mat.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+            this.mat = sharpenedMat;
+            this.img.Source = Imaging.CreateBitmapSourceFromHBitmap(sharpenedMat.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
             this.Title = title;
             HistogramUpdate();
 
             return this.mat;
         }
 
+        public Mat LaplacianBorderDetection(BorderType borderType, string type)
+        {
 
+            Mat grayImage = this.mat.Clone();
+            try
+            {
+                if (this.mat.NumberOfChannels == 1)
+                {
+                    grayImage = this.mat.Clone();
+                }
+                else
+                {
+                    CvInvoke.CvtColor(this.mat, grayImage, ColorConversion.Bgr2Gray);
+                }
+
+
+                Matrix<double> kernel = new Matrix<double>(3, 3);
+                switch (type)
+                {
+                    case "(mask 1) Linear Laplacian Sharpening":
+                        int[] Laplacian1 = new int[] { 0, -1, 0, -1, 5, -1, 0, -1, 0 };
+                        for (int i = 0; i < 3; ++i)
+                        {
+                            for (int j = 0; j < 3; ++j)
+                            {
+                                kernel[i, j] = Laplacian1[i * 3 + j];
+                            }
+                        }
+                        CvInvoke.Filter2D(mat, grayImage, kernel, new System.Drawing.Point(-1, -1), 0, borderType);
+                        break;
+                    case "(mask 2) Linear Laplacian Sharpening":
+                        int[] Laplacian2 = new int[] { -1, -1, -1, -1, 9, -1, -1, -1, -1 };
+                        for (int i = 0; i < 3; ++i)
+                        {
+                            for (int j = 0; j < 3; ++j)
+                            {
+                                kernel[i, j] = Laplacian2[i * 3 + j];
+                            }
+                        }
+                        CvInvoke.Filter2D(mat, grayImage, kernel, new System.Drawing.Point(-1, -1), 0, borderType);
+                        break;
+                    case "(mask 3) Linear Laplacian Sharpening":
+                        int[] Laplacian3 = new int[] { 1, -2, 1, -2, 5, -2, 1, -2, 1 };
+                        for (int i = 0; i < 3; ++i)
+                        {
+                            for (int j = 0; j < 3; ++j)
+                            {
+                                kernel[i, j] = Laplacian3[i * 3 + j];
+                            }
+                        }
+                        CvInvoke.Filter2D(mat, grayImage, kernel, new System.Drawing.Point(-1, -1), 0, borderType);
+                        break;
+                    default:
+                        int[] LaplacianDefault = new int[] { 1, 1, 1, 1, -8, 1, 1, 1, 1 };
+                        for (int i = 0; i < 3; ++i)
+                        {
+                            for (int j = 0; j < 3; ++j)
+                            {
+                                kernel[i, j] = LaplacianDefault[i * 3 + j];
+                            }
+                        }
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                // Handle the exception here, you can log it or perform other actions
+                MessageBox.Show("An error occurred: " + ex.Message);
+            }
+            return grayImage;
+        }
 
         static double[,] Convolve(double[,] matrix1, double[,] matrix2)
         {
@@ -368,6 +427,57 @@ namespace APO_Projekt
                 return null;
             }
             return null;
+        }
+
+        public Mat Sobel(Mat mat, BorderType borderType)
+        {
+            Mat edgesMat = new Mat();
+
+            CvInvoke.Sobel(mat, edgesMat, DepthType.Cv8U, 1, 1, 3, 1, 1, borderType);
+            CvInvoke.BitwiseNot(edgesMat, edgesMat);
+            if(edgesMat.NumberOfChannels != 1) CvInvoke.CvtColor(edgesMat, edgesMat, ColorConversion.Bgr2Gray);
+
+            this.mat = edgesMat;
+            this.img.Source = Imaging.CreateBitmapSourceFromHBitmap(edgesMat.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+            this.Title = "(Sobel) " + borderType;
+            this?.HistogramUpdate();
+
+
+            return this.mat;
+        }
+
+        public Mat Laplacian(Mat mat, BorderType borderType)
+        {
+            Mat edgesMat = new Mat();
+
+            CvInvoke.Laplacian(mat, edgesMat, DepthType.Cv8U, 1, 1, 0, borderType);
+            CvInvoke.BitwiseNot(edgesMat, edgesMat);
+            if (edgesMat.NumberOfChannels != 1) CvInvoke.CvtColor(edgesMat, edgesMat, ColorConversion.Bgr2Gray);
+
+            this.mat = edgesMat;
+            this.img.Source = Imaging.CreateBitmapSourceFromHBitmap(edgesMat.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+            this.Title = "(Laplacian) " + borderType;
+            this?.HistogramUpdate();
+
+            return this.mat;
+        }
+
+        public Mat Canny(Mat mat)
+        {
+            Mat edgesMat = new Mat();
+
+
+            if (mat.NumberOfChannels != 1) CvInvoke.CvtColor(mat, mat, ColorConversion.Bgr2Gray);
+            CvInvoke.Canny(mat, edgesMat, 100, 200);
+            CvInvoke.BitwiseNot(edgesMat, edgesMat);
+
+            this.mat = edgesMat;
+            this.img.Source = Imaging.CreateBitmapSourceFromHBitmap(edgesMat.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+            this.Title = "Canny";
+            this?.HistogramUpdate();
+
+
+            return this.mat;
         }
 
         public void PointOperations(List<Operations> imagesList)
@@ -557,71 +667,71 @@ namespace APO_Projekt
 
         public Mat Hough()
         {
-           
-                Mat image = this.mat.Clone();
-                Image<Gray, byte> gray = image.ToImage<Gray, byte>();
 
-                Mat edges = new Mat();
-                CvInvoke.Canny(gray, edges, 50, 150);
+            Mat image = this.mat.Clone();
+            Image<Gray, byte> gray = image.ToImage<Gray, byte>();
 
-                LineSegment2D[] lines = CvInvoke.HoughLinesP(
-                    edges,
-                    1,
-                    Math.PI / 180,
-                    100,
-                    50,
-                    10
-                );
+            Mat edges = new Mat();
+            CvInvoke.Canny(gray, edges, 50, 150);
 
-                foreach (LineSegment2D line in lines)
-                {
-                    CvInvoke.Line(gray.Mat, line.P1, line.P2, new MCvScalar(0, 0, 255), 2);
-                }
+            LineSegment2D[] lines = CvInvoke.HoughLinesP(
+                edges,
+                1,
+                Math.PI / 180,
+                100,
+                50,
+                10
+            );
 
-                this.mat = gray.Mat;
-                this.img.Source = Imaging.CreateBitmapSourceFromHBitmap(gray.Mat.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
-                this.Title = "Hough";
-                this?.HistogramUpdate();
-                return this.mat;
-            
-           
+            foreach (LineSegment2D line in lines)
+            {
+                CvInvoke.Line(gray.Mat, line.P1, line.P2, new MCvScalar(0, 0, 255), 2);
+            }
+
+            this.mat = gray.Mat;
+            this.img.Source = Imaging.CreateBitmapSourceFromHBitmap(gray.Mat.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+            this.Title = "Hough";
+            this?.HistogramUpdate();
+            return this.mat;
+
+
         }
 
         public Mat GrabCut()
         {
-           
-                if (this.mat == null)
-                {
-                    MessageBox.Show("No image loaded.");
-                    return null;
-                }
 
-                Mat mask = new Mat(this.mat.Size, DepthType.Cv8U, 1);
-                mask.SetTo(new MCvScalar(2));
+            if (this.mat == null)
+            {
+                MessageBox.Show("No image loaded.");
+                return null;
+            }
 
-                Rectangle rect = new Rectangle(50, 50, 200, 200); 
+            Mat mask = new Mat(this.mat.Size, DepthType.Cv8U, 1);
+            mask.SetTo(new MCvScalar(2));
 
-                CvInvoke.GrabCut(this.mat, mask, rect, new Mat(), new Mat(), 5, GrabcutInitType.InitWithRect);
+            Rectangle rect = new Rectangle(50, 50, 200, 200);
 
-                byte[] objectPixels = new byte[mask.Rows * mask.Cols];
-                mask.CopyTo(objectPixels);
+            CvInvoke.GrabCut(this.mat, mask, rect, new Mat(), new Mat(), 5, GrabcutInitType.InitWithRect);
 
-                for (int i = 0; i < objectPixels.Length; i++)
-                {
-                    objectPixels[i] = (byte)(objectPixels[i] == 1 ? 255 : 0);
-                }
-                Mat result = new Mat(mask.Size, DepthType.Cv8U, 1);
-                result.SetTo(objectPixels);
+            byte[] objectPixels = new byte[mask.Rows * mask.Cols];
+            mask.CopyTo(objectPixels);
+
+            for (int i = 0; i < objectPixels.Length; i++)
+            {
+                objectPixels[i] = (byte)(objectPixels[i] == 1 ? 255 : 0);
+            }
+            Mat result = new Mat(mask.Size, DepthType.Cv8U, 1);
+            result.SetTo(objectPixels);
 
 
-                this.mat = result;
-                this.img.Source = Imaging.CreateBitmapSourceFromHBitmap(result.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
-                this.Title = "GrabCut Segmentation";
-                this?.HistogramUpdate();
-                return this.mat;
-           
+            this.mat = result;
+            this.img.Source = Imaging.CreateBitmapSourceFromHBitmap(result.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+            this.Title = "GrabCut Segmentation";
+            this?.HistogramUpdate();
+            return this.mat;
+
         }
-       
+
 
         public void Inpaint(List<Operations> imagesList)
         {
@@ -629,21 +739,20 @@ namespace APO_Projekt
 
             if (inpaint.ShowDialog() == true)
             {
-                Mat firstImage = imagesList[inpaint.FirstImgIndex].mat; 
-                Mat secondImage = imagesList[inpaint.SecondImgIndex].mat; 
+                Mat firstImage = imagesList[inpaint.FirstImgIndex].mat;
+                Mat secondImage = imagesList[inpaint.SecondImgIndex].mat;
                 Image<Gray, byte> image1 = firstImage.ToImage<Gray, byte>();
                 Image<Gray, byte> image2 = secondImage.ToImage<Gray, byte>();
 
                 Mat inpaintedImage = new Mat();
                 CvInvoke.Inpaint(image1, image2, inpaintedImage, 3, InpaintType.NS);
-    
+
                 BitmapSource bitmapSource = Imaging.CreateBitmapSourceFromHBitmap(inpaintedImage.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
                 Operations imgWindow = new Operations(inpaintedImage, bitmapSource, "Impainted image");
                 imgWindow.Show();
                 imagesList.Add(imgWindow);
             }
         }
-
     }
 }
 

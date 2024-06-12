@@ -37,19 +37,19 @@
                     <MenuItem Header="Canny" Click="CannyEdgeDetection_Click"/>
                 </MenuItem>
                 <MenuItem Header="Linear Laplacian Sharpening">
-                    <MenuItem Header="Mask 1" Click="LinearLaplacianSharpening1_Click"/>
-                    <MenuItem Header="Mask 2" Click="LinearLaplacianSharpening2_Click"/>
-                    <MenuItem Header="Mask 3" Click="LinearLaplacianSharpening3_Click"/>
+                    <MenuItem Header="Laplacian Linear Sharpening (mask 1)" Click="LinearLaplacianSharpening1_Click"/>
+                    <MenuItem Header="Laplacian Linear Sharpening (mask 2)" Click="LinearLaplacianSharpening2_Click"/>
+                    <MenuItem Header="Laplacian Linear Sharpening (mask 3)" Click="LinearLaplacianSharpening3_Click"/>
                 </MenuItem>
                 <MenuItem Header="Directional Edge Detection">
-                    <MenuItem Header="Prewitt H" Click="PrewittEdgeDetectionH_Click"/>
-                    <MenuItem Header="Prewitt V" Click="PrewittEdgeDetectionV_Click"/>
+                    <MenuItem Header="Prewitt N" Click="PrewittEdgeDetectionN_Click"/>
+                    <MenuItem Header="Prewitt E" Click="PrewittEdgeDetectionE_Click"/>
+                    <MenuItem Header="Prewitt S" Click="PrewittEdgeDetectionS_Click"/>
+                    <MenuItem Header="Prewitt W" Click="PrewittEdgeDetectionW_Click"/>
                     <MenuItem Header="Prewitt NE" Click="PrewittEdgeDetectionNE_Click"/>
                     <MenuItem Header="Prewitt SE" Click="PrewittEdgeDetectionSE_Click"/>
-                    <MenuItem Header="Prewitt NW" Click="PrewittEdgeDetectionNW_Click"/>
                     <MenuItem Header="Prewitt SW" Click="PrewittEdgeDetectionSW_Click"/>
-                    <MenuItem Header="Prewitt IH" Click="PrewittEdgeDetectionIH_Click"/>
-                    <MenuItem Header="Prewitt IV" Click="PrewittEdgeDetectionIV_Click"/>
+                    <MenuItem Header="Prewitt NW" Click="PrewittEdgeDetectionNW_Click"/>
                 </MenuItem>
                 <MenuItem Header="Custom Linear Operation" Click="CustomLinearOperation_Click"/>
 

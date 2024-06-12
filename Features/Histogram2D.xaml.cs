@@ -34,6 +34,7 @@ namespace APO_Projekt.Features
                       {
                           byte intensity1 = image1.Data[i, j, 0];
                           byte intensity2 = image2.Data[i, j, 0];
+                        // MessageBox.Show(intensity1.ToString() + " | " + intensity2.ToString());
                         data[intensity1, intensity2]++;
                       }
                   }
